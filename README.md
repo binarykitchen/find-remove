@@ -1,8 +1,6 @@
 # find-delete
 
-finds and deletes files from a start directory onwards including the given directory itself.
-
-yep it knows recursion and search is customizable by extension and/or filename.
+recursively finds files by filter options from a start directory onwards and deletes these. useful if you want to clean up a directory in your node.js app.
 
 ## installation
     
@@ -12,25 +10,22 @@ to install find-delete, use [npm](http://github.com/isaacs/npm):
 
 ## quick examples
 
-### delete all *.bak and *.log files within the '/temp/' directory:
+### delete all *.bak and *.log files within the /temp/ directory:
 
 ```javascript
-var result = findRemove('/temp/', {extensions: ['.bak', '.log']});
+var result = findRemove('/temp', {extensions: ['.bak', '.log']});
 ```
 
-the return value 'result' is a json object with the successfully deleted files.
+the return value 'result' is a json object with successfully deleted files. if you output 'result' to the console, you will get something like this:
 
-```javascript
-console.log(result);
+```
+{
+    '/tmp/haumiblau.bak': true,
+    '/tmp/dump.log': true 
+}
 ```
 
-could print:
-
-```javascript
-{ '/tmp/haumiblau.bak': true, '/tmp/dump.log': true }
-```
-
-### delete all files called 'dump.log' within the '/temp/' directory and any of its subfolders:
+### delete all files called 'dump.log' within the /temp/ directory and any of its subfolders:
 
 ```javascript
 var result = findRemove(rootDirectory, {files: 'dump.log'});
@@ -39,24 +34,26 @@ var result = findRemove(rootDirectory, {files: 'dump.log'});
 ### delete recursively all files called 'dump.log' AND also all files with the extension '.dmp'  within '/temp/':
 
 ```javascript
-var result = findRemove(rootDirectory, {files: 'dump.log', extension: '.dmp'});
+var result = findRemove('/tmp', {files: 'dump.log', extension: '.dmp'});
 ```
 
-### delete everything inside AND including the '/temp/' directory
+### delete everything inside AND including the /temp directory
 
 just call it without parameters so that there are no filters:
 
 ```javascript
-var result = findRemove(rootDirectory, null);
+var result = findRemove('/tmp', null);
 ```
 
-or there is a nicer function for that:
+or there is a nicer function for your majesty:
 
 ```javascript
-var result = removeAll(rootDirectory);
+var result = removeAll('/tmp');
 ```
 
-## findRemove(dir, options)
+## api
+
+### findRemove(dir, options)
 
 findRemove takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options.
  
@@ -69,7 +66,7 @@ __Arguments__
 
 when no options are given, everything is removed as if there were no filters.
 
-## removeAll(dir)
+### removeAll(dir)
 
 removeAll is just a convenient function and does the same like 'findRemove(dir, null)' - it deletes everything including 'dir' in cold blood. you have been warned.
  
