@@ -58,8 +58,13 @@ var findRemove = function(currentDir, options) {
                 if (!doDelete && files) {
                     if (util.isArray(files))
                         doDelete = files.indexOf(file) !== -1;
-                    else
-                        doDelete = (file === files);
+                    else {
+                        if (files === '*.*')
+                            doDelete = true;
+                        else 
+                            doDelete = (file === files);
+                        
+                    }
                 }
 
                 if (doDelete) {

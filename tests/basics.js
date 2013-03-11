@@ -272,6 +272,24 @@ module.exports = testCase({
             t.done();
         },
 
+        'findRemove(files set to *.*)': function(t) {
+            findRemove(directory1_2_1, {files: '*.*'});
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            t.equal(exists1_2_1_1, false, 'findRemove(files set to *.*) removed randomFile1_2_1_1 fine');
+
+            var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
+            t.equal(exists1_2_1_2, false, 'findRemove(files set to *.*) removed randomFile1_2_1_2 fine');
+
+            var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
+            t.equal(exists1_2_1_3, false, 'findRemove(files set to *.*) removed randomFile1_2_1_3 fine');
+
+            var exists1_2_1 = fs.existsSync(directory1_2_1);
+            t.equal(exists1_2_1, true, 'findRemove(files set to *.*did not remove directory1_2_1');
+
+            t.done();
+        },
+
         'findRemove(with mixed ext and file params)': function(t) {
             var result = findRemove(rootDirectory, {files: randomFilename1, extensions: ['.log']});
 

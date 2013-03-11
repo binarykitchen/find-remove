@@ -61,7 +61,7 @@ __arguments__
 
 * dir - any directory to search for files for deletion
 * options - currently two properties are supported:
-    * files - can be a string or an array of files you want to delete within `dir`
+    * files - can be a string or an array of files you want to delete within `dir`. also `*.*` is allowed here if you all files.
     * extensions - this too, can be a string or an array of file extenstions you want to delete within `dir`
 
 when no options are given, everything is removed as if there were no filters.
