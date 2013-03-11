@@ -7,6 +7,12 @@ recursively finds files by filter options from a start directory onwards and del
 to install find-delete, use [npm](http://github.com/isaacs/npm):
 
     $ npm install find-delete
+    
+then in your node.js app, get reference to the function like that:
+    
+```javascript
+var findRemove = require('find-remove');
+```
 
 ## quick examples
 
@@ -42,13 +48,7 @@ var result = findRemove('/tmp', {files: 'dump.log', extension: '.dmp'});
 just call it without parameters so that there are no filters:
 
 ```javascript
-var result = findRemove('/tmp', null);
-```
-
-or there is a nicer function for your majesty:
-
-```javascript
-var result = removeAll('/tmp');
+var result = findRemove('/tmp');
 ```
 
 ## api
@@ -65,16 +65,6 @@ __arguments__
     * extensions - this too, can be a string or an array of file extenstions you want to delete within `dir`
 
 when no options are given, everything is removed as if there were no filters.
-
-### removeAll(dir)
-
-removeAll is just a convenient function and does the same like `findRemove(dir, null)`
-
-it deletes everything including `dir` in cold blood. **you have been warned.**
- 
-__arguments__
-
-* dir - any directory to delete with all its subfolders and files within.
 
 ## todo
 

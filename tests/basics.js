@@ -5,8 +5,7 @@ var   testCase = require('nodeunit').testCase
     , fs = require('fs')
     , async = require('async')
     , rimraf = require('rimraf')
-    , findRemove
-    , removeAll;
+    , findRemove;
 
 var rootDirectory = path.join(require('os').tmpDir(), 'find-remove');
 
@@ -95,16 +94,9 @@ module.exports = testCase({
     
     'TC 1: tests without real files': testCase({
         'loading findRemove function (require)': function(t) {
-            findRemove = require('../find-remove.js').findRemove;
+            findRemove = require('../find-remove.js');
 
             t.ok(findRemove, 'findRemove is loaded.');
-            t.done();
-        },
-
-        'loading removeAll function (require)': function(t) {
-            removeAll = require('../find-remove.js').removeAll;
-
-            t.ok(removeAll, 'removeAll is loaded.');
             t.done();
         },
 
@@ -113,10 +105,6 @@ module.exports = testCase({
 
             result = findRemove(dir);
             t.ok(result, [], 'findRemove() returned empty an array.');
-
-            result = removeAll(dir);
-            t.ok(result, [], 'removeAll() returned empty an array.');
-
 
             t.done();
         }
@@ -130,22 +118,25 @@ module.exports = testCase({
             destroyFakeDirectoryTree(callback);
         },
 
-        'removeAll(rootDirectory)': function(t) {
-            removeAll(rootDirectory);
+        'findRemove(rootDirectory)': function(t) {
+            findRemove(rootDirectory);
 
             var exists = fs.existsSync(rootDirectory);
-            t.equal(exists, false, 'removeAll(rootDirectory) removed everything fine');
+            t.equal(exists, false, 'findRemove(rootDirectory) removed everything fine');
+
+            var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
+            t.equal(exists1_2_1_3, false, 'findRemove(rootDirectory) also removed randomFile1_2_1_3 fine');
 
             t.done();
         },
 
-        'removeAll(directory1_2_1)': function(t) {
-            var result = removeAll(directory1_2_1);
+        'findRemove(directory1_2_1)': function(t) {
+            var result = findRemove(directory1_2_1);
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
             var exists1_1 = fs.existsSync(directory1_1);
-            t.equal(exists1_2_1, false, 'removeAll(directory1_2_1) removed everything fine');
-            t.equal(exists1_1, true, 'removeAll(directory1_2_1) did not remove exists1_1');
+            t.equal(exists1_2_1, false, 'findRemove(directory1_2_1) removed everything fine');
+            t.equal(exists1_1, true, 'findRemove(directory1_2_1) did not remove exists1_1');
 
             t.ok(result[randomFile1_2_1_1], 'randomFile1_2_1_1 is in result');
             t.ok(result[randomFile1_2_1_2], 'randomFile1_2_1_2 is in result');
@@ -155,13 +146,13 @@ module.exports = testCase({
             t.done();
         },
 
-        'removeAll(directory2)': function(t) {
-            var result = removeAll(directory2);
+        'findRemove(directory2)': function(t) {
+            var result = findRemove(directory2);
 
             var exists2 = fs.existsSync(directory2);
             var exists1_2 = fs.existsSync(directory1_2);
-            t.equal(exists2, false, 'removeAll(directory2) removed everything fine');
-            t.equal(exists1_2, true, 'removeAll(directory2) did not remove directory1_2');
+            t.equal(exists2, false, 'findRemove(directory2) removed everything fine');
+            t.equal(exists1_2, true, 'findRemove(directory2) did not remove directory1_2');
 
             t.ok(result[randomFile2_1], 'randomFile2_1 is in result');
             
@@ -285,7 +276,7 @@ module.exports = testCase({
             t.equal(exists1_2_1_3, false, 'findRemove(files set to *.*) removed randomFile1_2_1_3 fine');
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
-            t.equal(exists1_2_1, true, 'findRemove(files set to *.*did not remove directory1_2_1');
+            t.equal(exists1_2_1, true, 'findRemove(files set to *.* did not remove directory1_2_1');
 
             t.done();
         },
