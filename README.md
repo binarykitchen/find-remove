@@ -31,7 +31,7 @@ the return value 'result' is a json object with successfully deleted files. if y
 var result = findRemove(rootDirectory, {files: 'dump.log'});
 ```
 
-### delete recursively all files called 'dump.log' AND also all files with the extension '.dmp'  within '/temp/':
+### delete recursively all files called 'dump.log' AND also all files with the extension '.dmp'  within /temp/:
 
 ```javascript
 var result = findRemove('/tmp', {files: 'dump.log', extension: '.dmp'});
@@ -57,18 +57,20 @@ var result = removeAll('/tmp');
 
 findRemove takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options.
  
-__Arguments__
+__arguments__
 
 * dir - any directory to search for files for deletion
 * options - currently two properties are supported:
-    * files - can be a string or an array of files you want to delete within 'dir'
-    * extensions - this too, can be a string or an array of file extenstions you want to delete within 'dir'
+    * files - can be a string or an array of files you want to delete within `dir`
+    * extensions - this too, can be a string or an array of file extenstions you want to delete within `dir`
 
 when no options are given, everything is removed as if there were no filters.
 
 ### removeAll(dir)
 
-removeAll is just a convenient function and does the same like 'findRemove(dir, null)' - it deletes everything including 'dir' in cold blood. **you have been warned.**
+removeAll is just a convenient function and does the same like `findRemove(dir, null)`
+
+it deletes everything including `dir` in cold blood. **you have been warned.**
  
 __arguments__
 
