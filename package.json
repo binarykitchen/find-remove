@@ -1,0 +1,29 @@
+{
+    "name":         "find-remove",
+    "version":      "0.0.1",
+    "description":  "finds and deletes files from a start directory onwards. yes it knows recursion and search is customizable by extension and/or filename.",
+    "main":         "find-remove.js",
+    "author":       "Michael Heuberger <michael.heuberger@binarykitchen.com> (http://binarykitchen.com)",
+    "keywords":     ["file", "remove", "rmdir", "unlink", "find", "recursive", "fs", "delete", "extension"],
+    "devDependencies": {
+        "nodeunit": "*",
+        "randomstring": "*",
+        "mkdirp": "*",
+        "async": "*",
+        "rimraf": "*"        
+    },
+    "dependencies": {
+        "fmerge": ">=1.0"
+    },
+    "engines": {
+        "node": ">=0.8"
+    },
+    "scripts": {
+        "test": "nodeunit tests/basics.js"
+    },
+    "repository": {
+        "type": "git",
+        "url":  "https://github.com/binarykitchen/find-remove.git"
+    },
+    "license": "MIT"
+}

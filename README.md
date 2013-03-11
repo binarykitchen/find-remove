@@ -1,0 +1,87 @@
+# find-delete
+
+finds and deletes files from a start directory onwards including the given directory itself.
+
+yep it knows recursion and search is customizable by extension and/or filename.
+
+## installation
+    
+to install find-delete, use [npm](http://github.com/isaacs/npm):
+
+    $ npm install find-delete
+
+## quick examples
+
+### delete all *.bak and *.log files within the '/temp/' directory:
+
+```javascript
+var result = findRemove('/temp/', {extensions: ['.bak', '.log']});
+```
+
+the return value 'result' is a json object with the successfully deleted files.
+
+```javascript
+console.log(result);
+```
+
+could print:
+
+```javascript
+{ '/tmp/haumiblau.bak': true, '/tmp/dump.log': true }
+```
+
+### delete all files called 'dump.log' within the '/temp/' directory and any of its subfolders:
+
+```javascript
+var result = findRemove(rootDirectory, {files: 'dump.log'});
+```
+
+### delete recursively all files called 'dump.log' AND also all files with the extension '.dmp'  within '/temp/':
+
+```javascript
+var result = findRemove(rootDirectory, {files: 'dump.log', extension: '.dmp'});
+```
+
+### delete everything inside AND including the '/temp/' directory
+
+just call it without parameters so that there are no filters:
+
+```javascript
+var result = findRemove(rootDirectory, null);
+```
+
+or there is a nicer function for that:
+
+```javascript
+var result = removeAll(rootDirectory);
+```
+
+## findRemove(dir, options)
+
+findRemove takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options.
+ 
+__Arguments__
+
+* dir - any directory to search for files before deletion
+* options - currently two properties are supported:
+** files - can be a string or an array of files you want to delete within 'dir'
+** extensions - this too, can be a string or an array of file extenstions you want to delete within 'dir'
+
+when no options are given, everything is removed as if there were no filters.
+
+## removeAll(dir)
+
+removeAll is just a convenient function and does the same like 'findRemove(dir, null)' - it deletes everything including 'dir' in cold blood. you have been warned.
+ 
+__Arguments__
+
+* dir - any directory to delete with all its subfolders and files within.
+
+## todo
+
+* add more filtering options (combinations, regex,  etc.)
+* have an asynchronous solution
+
+## license
+
+MIT
