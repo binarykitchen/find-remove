@@ -16,7 +16,7 @@ to install find-delete, use [npm](http://github.com/isaacs/npm):
 var result = findRemove('/temp', {extensions: ['.bak', '.log']});
 ```
 
-the return value 'result' is a json object with successfully deleted files. if you output 'result' to the console, you will get something like this:
+the return value 'result' is a json object with successfully deleted files. if you output `result` to the console, you will get something like this:
 
 ```
 {
@@ -59,18 +59,18 @@ findRemove takes any start directory and searches files from there for removal. 
  
 __Arguments__
 
-* dir - any directory to search for files before deletion
+* dir - any directory to search for files for deletion
 * options - currently two properties are supported:
-** files - can be a string or an array of files you want to delete within 'dir'
-** extensions - this too, can be a string or an array of file extenstions you want to delete within 'dir'
+    * files - can be a string or an array of files you want to delete within 'dir'
+    * extensions - this too, can be a string or an array of file extenstions you want to delete within 'dir'
 
 when no options are given, everything is removed as if there were no filters.
 
 ### removeAll(dir)
 
-removeAll is just a convenient function and does the same like 'findRemove(dir, null)' - it deletes everything including 'dir' in cold blood. you have been warned.
+removeAll is just a convenient function and does the same like 'findRemove(dir, null)' - it deletes everything including 'dir' in cold blood. **you have been warned.**
  
-__Arguments__
+__arguments__
 
 * dir - any directory to delete with all its subfolders and files within.
 
