@@ -1,3 +1,5 @@
+module.exports = findRemove;
+
 var   fs = require('fs')
     , path = require('path')
     , merge = require('fmerge')
@@ -81,6 +83,4 @@ function findRemove(currentDir, options) {
     }
     
     return removed;
-};
-
-module.exports = findRemove;
+}
