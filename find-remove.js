@@ -1,4 +1,4 @@
-module.exports = findRemove;
+module.exports = findRemoveSync;
 
 var   fs = require('fs')
     , path = require('path')
@@ -6,7 +6,7 @@ var   fs = require('fs')
     , util = require('util');
 
 /**
- * findRemove(currentDir, options) takes any start directory and searches files from there for removal.
+ * findRemoveSync(currentDir, options) takes any start directory and searches files from there for removal.
  * the selection of files for removal depends on the given options. when no options are given,
  * everything is removed as if there were no filters.
  * 
@@ -19,7 +19,7 @@ var   fs = require('fs')
  * @return {Object} json object of files and/or directories that were found and successfully removed.
  * @api public
  */
-function findRemove(currentDir, options) {
+function findRemoveSync(currentDir, options) {
     
     var removed = {};
 
@@ -38,7 +38,7 @@ function findRemove(currentDir, options) {
 
             if (fs.statSync(currentFile).isDirectory()) {
                 // the recursive call 
-                var result = findRemove(currentFile, options);
+                var result = findRemoveSync(currentFile, options);
                 
                 // merge results
                 removed = merge(removed, result);

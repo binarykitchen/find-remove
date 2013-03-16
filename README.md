@@ -11,7 +11,7 @@ to install find-delete, use [npm](http://github.com/isaacs/npm):
 then in your node.js app, get reference to the function like that:
     
 ```javascript
-var findRemove = require('find-remove');
+var findRemoveSync = require('find-remove');
 ```
 
 ## quick examples
@@ -19,7 +19,7 @@ var findRemove = require('find-remove');
 ### delete all *.bak and *.log files within the /temp/ directory
 
 ```javascript
-var result = findRemove('/temp', {extensions: ['.bak', '.log']});
+var result = findRemoveSync('/temp', {extensions: ['.bak', '.log']});
 ```
 
 the return value `result` is a json object with successfully deleted files. if you output `result` to the console, you will get something like this:
@@ -34,13 +34,13 @@ the return value `result` is a json object with successfully deleted files. if y
 ### delete all files called 'dump.log' within the /temp/ directory and any of its subfolders
 
 ```javascript
-var result = findRemove(rootDirectory, {files: 'dump.log'});
+var result = findRemoveSync(rootDirectory, {files: 'dump.log'});
 ```
 
 ### delete recursively all files called 'dump.log' AND also all files with the extension '.dmp'  within /temp/
 
 ```javascript
-var result = findRemove('/tmp', {files: 'dump.log', extension: '.dmp'});
+var result = findRemoveSync('/tmp', {files: 'dump.log', extension: '.dmp'});
 ```
 
 ### delete everything inside AND including the /temp directory
@@ -49,14 +49,14 @@ just call it without options because no options means nothing is filtered.
 
 
 ```javascript
-var result = findRemove('/tmp');
+var result = findRemoveSync('/tmp');
 ```
 
 ## api
 
-### findRemove(dir, options)
+### findRemoveSync(dir, options)
 
-findRemove takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options. and at last, it deletes the selected files.
+findRemoveSync takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options. and at last, it deletes the selected files.
  
 __arguments__
 

@@ -5,7 +5,7 @@ var   testCase = require('nodeunit').testCase
     , fs = require('fs')
     , async = require('async')
     , rimraf = require('rimraf')
-    , findRemove;
+    , findRemoveSync;
 
 var rootDirectory = path.join(require('os').tmpDir(), 'find-remove');
 
@@ -93,18 +93,18 @@ function destroyFakeDirectoryTree(callback) {
 module.exports = testCase({
     
     'TC 1: tests without real files': testCase({
-        'loading findRemove function (require)': function(t) {
-            findRemove = require('../find-remove.js');
+        'loading findRemoveSync function (require)': function(t) {
+            findRemoveSync = require('../find-remove.js');
 
-            t.ok(findRemove, 'findRemove is loaded.');
+            t.ok(findRemoveSync, 'findRemoveSync is loaded.');
             t.done();
         },
 
         'removing non-existing directory': function(t) {
             var result, dir = generateRandomFilename();
 
-            result = findRemove(dir);
-            t.ok(result, [], 'findRemove() returned empty an array.');
+            result = findRemoveSync(dir);
+            t.ok(result, [], 'findRemoveSync() returned empty an array.');
 
             t.done();
         }
@@ -118,25 +118,25 @@ module.exports = testCase({
             destroyFakeDirectoryTree(callback);
         },
 
-        'findRemove(rootDirectory)': function(t) {
-            findRemove(rootDirectory);
+        'findRemoveSync(rootDirectory)': function(t) {
+            findRemoveSync(rootDirectory);
 
             var exists = fs.existsSync(rootDirectory);
-            t.equal(exists, false, 'findRemove(rootDirectory) removed everything fine');
+            t.equal(exists, false, 'findRemoveSync(rootDirectory) removed everything fine');
 
             var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
-            t.equal(exists1_2_1_3, false, 'findRemove(rootDirectory) also removed randomFile1_2_1_3 fine');
+            t.equal(exists1_2_1_3, false, 'findRemoveSync(rootDirectory) also removed randomFile1_2_1_3 fine');
 
             t.done();
         },
 
-        'findRemove(directory1_2_1)': function(t) {
-            var result = findRemove(directory1_2_1);
+        'findRemoveSync(directory1_2_1)': function(t) {
+            var result = findRemoveSync(directory1_2_1);
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
             var exists1_1 = fs.existsSync(directory1_1);
-            t.equal(exists1_2_1, false, 'findRemove(directory1_2_1) removed everything fine');
-            t.equal(exists1_1, true, 'findRemove(directory1_2_1) did not remove exists1_1');
+            t.equal(exists1_2_1, false, 'findRemoveSync(directory1_2_1) removed everything fine');
+            t.equal(exists1_1, true, 'findRemoveSync(directory1_2_1) did not remove exists1_1');
 
             t.ok(result[randomFile1_2_1_1], 'randomFile1_2_1_1 is in result');
             t.ok(result[randomFile1_2_1_2], 'randomFile1_2_1_2 is in result');
@@ -146,13 +146,13 @@ module.exports = testCase({
             t.done();
         },
 
-        'findRemove(directory2)': function(t) {
-            var result = findRemove(directory2);
+        'findRemoveSync(directory2)': function(t) {
+            var result = findRemoveSync(directory2);
 
             var exists2 = fs.existsSync(directory2);
             var exists1_2 = fs.existsSync(directory1_2);
-            t.equal(exists2, false, 'findRemove(directory2) removed everything fine');
-            t.equal(exists1_2, true, 'findRemove(directory2) did not remove directory1_2');
+            t.equal(exists2, false, 'findRemoveSync(directory2) removed everything fine');
+            t.equal(exists1_2, true, 'findRemoveSync(directory2) did not remove directory1_2');
 
             t.ok(result[randomFile2_1], 'randomFile2_1 is in result');
             
@@ -162,49 +162,49 @@ module.exports = testCase({
             t.done();
         },
 
-        'findRemove(all bak files from root)': function(t) {
-            findRemove(rootDirectory, {extensions: '.bak'});
+        'findRemoveSync(all bak files from root)': function(t) {
+            findRemoveSync(rootDirectory, {extensions: '.bak'});
 
             var exists1 = fs.existsSync(randomFile1);
             var exists2_1 = fs.existsSync(randomFile2_1);
             var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
             var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);           
 
-            t.equal(exists1, false, 'findRemove(all bak files from root) removed randomFile1 fine');
-            t.equal(exists2_1, false, 'findRemove(all bak files from root) removed exists2_1 fine');
-            t.equal(exists1_2_1_2, false, 'findRemove(all bak files from root) removed exists1_2_1_2 fine');
-            t.equal(exists1_2_1_3, false, 'findRemove(all bak files from root) removed exists1_2_1_3 fine');
+            t.equal(exists1, false, 'findRemoveSync(all bak files from root) removed randomFile1 fine');
+            t.equal(exists2_1, false, 'findRemoveSync(all bak files from root) removed exists2_1 fine');
+            t.equal(exists1_2_1_2, false, 'findRemoveSync(all bak files from root) removed exists1_2_1_2 fine');
+            t.equal(exists1_2_1_3, false, 'findRemoveSync(all bak files from root) removed exists1_2_1_3 fine');
 
             var exists3 = fs.existsSync(randomFile3);
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
             var exists0 = fs.existsSync(rootDirectory);
             var exists1_2_1 = fs.existsSync(directory1_2_1);
 
-            t.equal(exists3, true, 'findRemove(all bak files from root) did not remove log file exists3');
-            t.equal(exists1_2_1_1, true, 'findRemove(all bak files from root) did not remove log file exists1_2_1_1');            
-            t.equal(exists0, true, 'findRemove(all bak files from root) did not remove root directory');
-            t.equal(exists1_2_1, true, 'findRemove(all bak files from root) did not remove directory directory1_2_1');
+            t.equal(exists3, true, 'findRemoveSync(all bak files from root) did not remove log file exists3');
+            t.equal(exists1_2_1_1, true, 'findRemoveSync(all bak files from root) did not remove log file exists1_2_1_1');            
+            t.equal(exists0, true, 'findRemoveSync(all bak files from root) did not remove root directory');
+            t.equal(exists1_2_1, true, 'findRemoveSync(all bak files from root) did not remove directory directory1_2_1');
 
             t.done();
         },
 
-        'findRemove(all log files from directory1_2_1)': function(t) {
-            findRemove(directory1_2_1, {extensions: '.log'});
+        'findRemoveSync(all log files from directory1_2_1)': function(t) {
+            findRemoveSync(directory1_2_1, {extensions: '.log'});
 
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
-            t.equal(exists1_2_1_1, false, 'findRemove(all log files from directory1_2_1) removed randomFile1_2_1_1 fine');
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(all log files from directory1_2_1) removed randomFile1_2_1_1 fine');
 
             var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
-            t.equal(exists1_2_1_2, true, 'findRemove(all log files from directory1_2_1) did not remove file randomFile1_2_1_2');
+            t.equal(exists1_2_1_2, true, 'findRemoveSync(all log files from directory1_2_1) did not remove file randomFile1_2_1_2');
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
-            t.equal(exists1_2_1, true, 'ffindRemove(all log files from directory1_2_1) did not remove directory directory1_2_1');            
+            t.equal(exists1_2_1, true, 'findRemoveSync(all log files from directory1_2_1) did not remove directory directory1_2_1');            
 
             t.done();
         },
 
-        'findRemove(all bak and log files from root)': function(t) {
-            findRemove(rootDirectory, {extensions: ['.bak', '.log']});
+        'findRemoveSync(all bak and log files from root)': function(t) {
+            findRemoveSync(rootDirectory, {extensions: ['.bak', '.log']});
 
             var exists1 = fs.existsSync(randomFile1);
             var exists2_1 = fs.existsSync(randomFile2_1);
@@ -215,84 +215,84 @@ module.exports = testCase({
             var exists3 = fs.existsSync(randomFile3);
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
 
-            t.equal(exists1, false, 'findRemove(all bak and log files from root) removed randomFile1 fine');
-            t.equal(exists2_1, false, 'findRemove(all bak and log files from root) removed exists2_1 fine');
-            t.equal(exists1_2_1_2, false, 'findRemove(all bak and log files from root) removed exists1_2_1_2 fine');
-            t.equal(exists1_2_1_3, false, 'findRemove(all bak and log files from root) removed exists1_2_1_3 fine');
+            t.equal(exists1, false, 'findRemoveSync(all bak and log files from root) removed randomFile1 fine');
+            t.equal(exists2_1, false, 'findRemoveSync(all bak and log files from root) removed exists2_1 fine');
+            t.equal(exists1_2_1_2, false, 'findRemoveSync(all bak and log files from root) removed exists1_2_1_2 fine');
+            t.equal(exists1_2_1_3, false, 'findRemoveSync(all bak and log files from root) removed exists1_2_1_3 fine');
 
-            t.equal(exists2, false, 'findRemove(all bak and log files from root) removed exists2 fine');
-            t.equal(exists3, false, 'findRemove(all bak and log files from root) removed exists3 fine');
-            t.equal(exists1_2_1_1, false, 'findRemove(all bak and log files from root) removed exists1_2_1_1 fine');
+            t.equal(exists2, false, 'findRemoveSync(all bak and log files from root) removed exists2 fine');
+            t.equal(exists3, false, 'findRemoveSync(all bak and log files from root) removed exists3 fine');
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(all bak and log files from root) removed exists1_2_1_1 fine');
 
             var exists1_1 = fs.existsSync(directory1_1);
-            t.equal(exists1_1, true, 'findRemove(all bak and log files from root) did not remove directory1_1');
+            t.equal(exists1_1, true, 'findRemoveSync(all bak and log files from root) did not remove directory1_1');
             
             t.done();
         },
 
-        'findRemove(filename randomFilename1_2_1_1 from directory1_2)': function(t) {
-            findRemove(directory1_2, {files: randomFilename1_2_1_1});
+        'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2)': function(t) {
+            findRemoveSync(directory1_2, {files: randomFilename1_2_1_1});
 
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
-            t.equal(exists1_2_1_1, false, 'findRemove(filename randomFilename1_2_1_1 from directory1_2) removed randomFile1_2_1_1 fine');
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) removed randomFile1_2_1_1 fine');
 
             var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
-            t.equal(exists1_2_1_2, true, 'findRemove(filename randomFilename1_2_1_1 from directory1_2) did not remove randomFile1_2_1_2');
+            t.equal(exists1_2_1_2, true, 'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) did not remove randomFile1_2_1_2');
 
             var exists1_2 = fs.existsSync(directory1_2);
-            t.equal(exists1_2, true, 'findRemove(filename randomFilename1_2_1_1 from directory1_2) did not remove directory1_2');
+            t.equal(exists1_2, true, 'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) did not remove directory1_2');
 
             t.done();
         },
 
-        'findRemove(two files from root)': function(t) {
-            findRemove(rootDirectory, {files: [randomFilename2, randomFilename1_2_1_3]});
+        'findRemoveSync(two files from root)': function(t) {
+            findRemoveSync(rootDirectory, {files: [randomFilename2, randomFilename1_2_1_3]});
 
             var exists2 = fs.existsSync(randomFile2);
-            t.equal(exists2, false, 'findRemove(two files from root) removed randomFile2 fine');
+            t.equal(exists2, false, 'findRemoveSync(two files from root) removed randomFile2 fine');
 
             var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
-            t.equal(exists1_2_1_3, false, 'findRemove(two files from root) removed randomFile1_2_1_3 fine');
+            t.equal(exists1_2_1_3, false, 'findRemoveSync(two files from root) removed randomFile1_2_1_3 fine');
 
             var exists1 = fs.existsSync(randomFile1);
-            t.equal(exists1, true, 'findRemove(two files from root) did not remove randomFile1');
+            t.equal(exists1, true, 'findRemoveSync(two files from root) did not remove randomFile1');
 
             var exists0 = fs.existsSync(rootDirectory);
-            t.equal(exists0, true, 'findRemove(two files from root) did not remove root directory');
+            t.equal(exists0, true, 'findRemoveSync(two files from root) did not remove root directory');
 
             t.done();
         },
 
-        'findRemove(files set to *.*)': function(t) {
-            findRemove(directory1_2_1, {files: '*.*'});
+        'findRemoveSync(files set to *.*)': function(t) {
+            findRemoveSync(directory1_2_1, {files: '*.*'});
 
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
-            t.equal(exists1_2_1_1, false, 'findRemove(files set to *.*) removed randomFile1_2_1_1 fine');
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(files set to *.*) removed randomFile1_2_1_1 fine');
 
             var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
-            t.equal(exists1_2_1_2, false, 'findRemove(files set to *.*) removed randomFile1_2_1_2 fine');
+            t.equal(exists1_2_1_2, false, 'findRemoveSync(files set to *.*) removed randomFile1_2_1_2 fine');
 
             var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
-            t.equal(exists1_2_1_3, false, 'findRemove(files set to *.*) removed randomFile1_2_1_3 fine');
+            t.equal(exists1_2_1_3, false, 'findRemoveSync(files set to *.*) removed randomFile1_2_1_3 fine');
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
-            t.equal(exists1_2_1, true, 'findRemove(files set to *.* did not remove directory1_2_1');
+            t.equal(exists1_2_1, true, 'findRemoveSync(files set to *.* did not remove directory1_2_1');
 
             t.done();
         },
 
-        'findRemove(with mixed ext and file params)': function(t) {
-            var result = findRemove(rootDirectory, {files: randomFilename1, extensions: ['.log']});
+        'findRemoveSync(with mixed ext and file params)': function(t) {
+            var result = findRemoveSync(rootDirectory, {files: randomFilename1, extensions: ['.log']});
 
             var exists1 = fs.existsSync(randomFile1);
             var exists2 = fs.existsSync(randomFile2);
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
-            t.equal(exists1, false, 'findRemove(with mixed ext and file params) removed randomFile1 fine');
-            t.equal(exists2, false, 'findRemove(with mixed ext and file params) removed randomFile2 fine');
-            t.equal(exists1_2_1_1, false, 'findRemove(with mixed ext and file params) removed randomFile1_2_1_1 fine');
+            t.equal(exists1, false, 'findRemoveSync(with mixed ext and file params) removed randomFile1 fine');
+            t.equal(exists2, false, 'findRemoveSync(with mixed ext and file params) removed randomFile2 fine');
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(with mixed ext and file params) removed randomFile1_2_1_1 fine');
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
-            t.equal(exists1_2_1, true, 'findRemove(two files from root) did not remove directory1_2_1');
+            t.equal(exists1_2_1, true, 'findRemoveSync(two files from root) did not remove directory1_2_1');
 
             t.strictEqual(typeof result[randomFile1], 'boolean', 'randomFile1 in result is boolean');
             t.strictEqual(typeof result[randomFile1_2_1_2], 'undefined', 'randomFile1_2_1_2 is NOT in result');
