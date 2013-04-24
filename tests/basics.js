@@ -362,6 +362,29 @@ module.exports = testCase({
             t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result');
 
             t.done();
+        },
+
+        'findRemoveSync(two files and check others)': function(t) {
+            var result = findRemoveSync(rootDirectory, {files: [randomFilename1_2_1_1, randomFilename1_2_1_3]});
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(two files and check others) removed randomFile1_2_1_1 fine');
+
+            var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
+            t.equal(exists1_2_1_3, false, 'findRemoveSync(two files and check others) removed randomFile1_2_1_3 fine');
+
+            var exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4);
+            t.equal(exists1_2_1_4, true, 'findRemoveSync(two files and check others) did not remove fixFile1_2_1_4');
+
+            var exists1_2_1_5 = fs.existsSync(fixFile1_2_1_5);
+            t.equal(exists1_2_1_5, true, 'findRemoveSync(two files and check others) did not remove fixFile1_2_1_5');
+
+            t.strictEqual(typeof result[randomFile1_2_1_1], 'boolean', 'randomFile1_2_1_1 is in result');
+            t.strictEqual(typeof result[randomFile1_2_1_3], 'boolean', 'randomFile1_2_1_3 is in result');
+            t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result');
+            t.strictEqual(typeof result[fixFile1_2_1_5], 'undefined', 'fixFile1_2_1_5 is NOT in result');
+
+            t.done();
         }
     })   
 });
