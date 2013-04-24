@@ -42,6 +42,10 @@ var randomFile1_2_1_1 = path.join(directory1_2_1, randomFilename1_2_1_1);
 var randomFile1_2_1_2 = path.join(directory1_2_1, generateRandomFilename('bak'));
 var randomFilename1_2_1_3 = generateRandomFilename('bak');
 var randomFile1_2_1_3 = path.join(directory1_2_1, randomFilename1_2_1_3);
+var fixFilename1_2_1_4 = 'something.jpg';
+var fixFile1_2_1_4 = path.join(directory1_2_1, fixFilename1_2_1_4);
+var fixFilename1_2_1_5 = 'something.png';
+var fixFile1_2_1_5 = path.join(directory1_2_1, fixFilename1_2_1_5);
 
 function makeFile(file, callback) {
     fs.writeFile(file, '', function(err) {
@@ -73,7 +77,9 @@ function createFakeDirectoryTree(callback) {
             
             function(callback) {makeFile(randomFile1_2_1_1, callback);},
             function(callback) {makeFile(randomFile1_2_1_2, callback);},
-            function(callback) {makeFile(randomFile1_2_1_3, callback);}
+            function(callback) {makeFile(randomFile1_2_1_3, callback);},
+            function(callback) {makeFile(fixFile1_2_1_4, callback);},
+            function(callback) {makeFile(fixFile1_2_1_5, callback);}
         ],
         
         function(err) {
@@ -296,6 +302,64 @@ module.exports = testCase({
 
             t.strictEqual(typeof result[randomFile1], 'boolean', 'randomFile1 in result is boolean');
             t.strictEqual(typeof result[randomFile1_2_1_2], 'undefined', 'randomFile1_2_1_2 is NOT in result');
+
+            t.done();
+        },
+
+        'findRemoveSync(with ignore param only)': function(t) {
+            var result = findRemoveSync(rootDirectory, {ignore: fixFilename1_2_1_4});
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            var exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4);
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(with ignore) did remove file randomFile1_2_1_1');
+            t.equal(exists1_2_1_4, true, 'findRemoveSync(with ignore) did not remove file fixFile1_2_1_4');
+            t.strictEqual(typeof result[randomFile1_2_1_1], 'boolean', 'randomFile1_2_1_1 in result is boolean');
+            t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result');
+
+            t.done();
+        },
+
+        'findRemoveSync(with ignore and jpg extension params)': function(t) {
+            var result = findRemoveSync(rootDirectory, {ignore: fixFilename1_2_1_4, extensions: '.jpg'});
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            var exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4);
+            t.equal(exists1_2_1_1, true, 'findRemoveSync(with ignore + jpg extension) did not remove file randomFile1_2_1_1');
+            t.equal(exists1_2_1_4, true, 'findRemoveSync(with ignore + jpg extension) did not remove file fixFile1_2_1_4');
+            t.strictEqual(typeof result[randomFile1_2_1_1], 'undefined', 'randomFile1_2_1_1 is NOT in result');
+            t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result');
+
+            t.done();
+        },
+
+        'findRemoveSync(with multiple ignore)': function(t) {
+            var result = findRemoveSync(rootDirectory, {ignore: [fixFilename1_2_1_4, fixFilename1_2_1_5]});
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            var exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4);
+            var exists1_2_1_5 = fs.existsSync(fixFile1_2_1_5);
+            t.equal(exists1_2_1_1, false, 'findRemoveSync(with multiple ignore) did remove file randomFile1_2_1_1');
+            t.equal(exists1_2_1_4, true, 'findRemoveSync(with multiple ignore) did not remove file fixFile1_2_1_4');
+            t.equal(exists1_2_1_5, true, 'findRemoveSync(with multiple ignore) did not remove file fixFile1_2_1_5');
+            t.strictEqual(typeof result[randomFile1_2_1_1], 'boolean', 'randomFile1_2_1_1 is in result');
+            t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result');
+            t.strictEqual(typeof result[fixFile1_2_1_5], 'undefined', 'fixFile1_2_1_5 is NOT in result');
+
+            t.done();
+        },
+
+        'findRemoveSync(with ignore and bak extension params)': function(t) {
+            var result = findRemoveSync(rootDirectory, {ignore: fixFilename1_2_1_4, extensions: '.bak'});
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
+            var exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4);
+            t.equal(exists1_2_1_1, true, 'findRemoveSync(with ignore + bak extension) did not remove file randomFile1_2_1_1');
+            t.equal(exists1_2_1_2, false, 'findRemoveSync(with ignore + bak extension) did remove file randomFile1_2_1_2');
+            t.equal(exists1_2_1_4, true, 'findRemoveSync(with ignore + bak extension) did not remove file fixFile1_2_1_4');
+            t.strictEqual(typeof result[randomFile1_2_1_1], 'undefined', 'randomFile1_2_1_1 is NOT in result');
+            t.strictEqual(typeof result[randomFile1_2_1_2], 'boolean', 'randomFile1_2_1_2 is in result');
+            t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result');
 
             t.done();
         }

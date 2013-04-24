@@ -37,6 +37,12 @@ the return value `result` is a json object with successfully deleted files. if y
 var result = findRemoveSync(rootDirectory, {files: 'dump.log'});
 ```
 
+### same as above but do not delete file 'haumiblau.bak'
+
+```javascript
+var result = findRemoveSync(rootDirectory, {files: 'dump.log', ignore: 'haumiblau.bak'});
+```
+
 ### delete recursively all files called 'dump.log' AND also all files with the extension '.dmp'  within /temp/
 
 ```javascript
@@ -64,6 +70,7 @@ __arguments__
 * options - currently two properties are supported:
     * files - can be a string or an array of files you want to delete within `dir`. also `*.*` is allowed here if you want to remove all files (but not directories).
     * extensions - this too, can be a string or an array of file extenstions you want to delete within `dir`
+    * ignore - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
 
 when no options are given, are undefined or null, then everything including directories are removed as if there were no filters.
 
