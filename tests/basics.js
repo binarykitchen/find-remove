@@ -1,3 +1,5 @@
+"use strict";
+
 var   testCase = require('nodeunit').testCase
     , randomstring = require('randomstring')
     , mkdirp = require('mkdirp')

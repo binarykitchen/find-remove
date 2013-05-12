@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = findRemoveSync;
 
 var   fs = require('fs')
