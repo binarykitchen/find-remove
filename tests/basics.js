@@ -449,7 +449,24 @@ module.exports = testCase({
             t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(limit to maxLevel = 3 + bak only) returned 2 entries.');
 
             t.done();
-        }        
+        },
+
+        'findRemoveSync(test run)': function(t) {
+            var result = findRemoveSync(rootDirectory, {test: true});
+
+            t.strictEqual(Object.keys(result).length, 9, 'findRemoveSync(test run) returned 9 entries.');
+
+            var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
+            t.equal(exists1_2_1_1, true, 'findRemoveSync(test run) did not remove randomFile1_2_1_1');
+
+            var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
+            t.equal(exists1_2_1_3, true, 'findRemoveSync(test run) did not remove randomFile1_2_1_3');
+
+            var exists1_1 = fs.existsSync(directory1_1);
+            t.equal(exists1_1, true, 'findRemoveSync(test run) did not remove directory1_1');            
+
+            t.done();
+        }
     }),
 
     'TC 3: age checks': testCase({

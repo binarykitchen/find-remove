@@ -6,8 +6,9 @@ var   fs = require('fs')
     , path = require('path')
     , merge = require('fmerge')
     , util = require('util')
-    , rimraf = require('rimraf')
-    , now;
+    , rimraf = require('rimraf')    
+    , now
+    , testRun;
 
 /**
  * findRemoveSync(currentDir, options) takes any start directory and searches files from there for removal.
@@ -36,8 +37,10 @@ function findRemoveSync(currentDir, options, currentLevel) {
         else
             currentLevel++;
         
-        if (currentLevel < 1)
+        if (currentLevel < 1) {
             now = new Date().getTime();
+            testRun = isTestRun(options); 
+        }
 
         // check directore before deleting files inside to maintain the original creation time, because
         // linux modifies creation date of folders when files have been deleted inside.
@@ -59,7 +62,9 @@ function findRemoveSync(currentDir, options, currentLevel) {
                 } else {
                     
                     if (doDeleteFile(currentFile, options)) {
-                        fs.unlinkSync(currentFile);
+                        if (!testRun)
+                            fs.unlinkSync(currentFile);
+                        
                         removed[currentFile] = true;
                     }
                 }
@@ -68,7 +73,9 @@ function findRemoveSync(currentDir, options, currentLevel) {
 
         if (deleteDirectory) {
             try {
-                rimraf.sync(currentDir);
+                if (!testRun)
+                    rimraf.sync(currentDir);
+                
                 removed[currentDir] = true
             } catch (err) {
                 throw err;
@@ -80,14 +87,14 @@ function findRemoveSync(currentDir, options, currentLevel) {
 }
 
 function doDeleteDirectory(currentDir, options, currentLevel) {
-    var optionsCount = options ? Object.keys(options).length : 0;    
+    var optionsCount = options ? Object.keys(options).length : 0;
     var doDelete     = optionsCount < 1;
     
     if (!doDelete && currentLevel > 0) {
         
         if (options.maxLevel && optionsCount === 1) {
             
-            var maxLevel = getMaxLevel(options);               
+            var maxLevel = getMaxLevel(options);
             doDelete = currentLevel <= maxLevel;
             
         } else {
@@ -163,4 +170,8 @@ function getMaxLevel(options) {
 
 function getAgeSeconds(options) {
     return (options && options.age && options.age.seconds) ? options.age.seconds : null;
+}
+
+function isTestRun(options) {
+    return (options && options.hasOwnProperty('test')) ? options.test : false;
 }

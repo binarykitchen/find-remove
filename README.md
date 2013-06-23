@@ -83,7 +83,7 @@ why the heck do we have this option? because of performance. if you do not care 
 
 ### findRemoveSync(dir, options)
 
-findRemoveSync takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options. and at last, it deletes the selected files.
+findRemoveSync takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options. and at last, it deletes the selected files/directories.
  
 __arguments__
 
@@ -94,13 +94,19 @@ __arguments__
     * ignore - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
     * age.seconds - can be any float number. findRemoveSync then compares it with the file stats and deletes those with creation times older than `age.seconds`
     * maxLevel - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
+    * test - advanced: set to true for a test run, meaning it does not delete anything but returns an array of files/directories it would have deleted.
+    
+when no options are given, are undefined or null, then everything including directories are removed as if there were no filters. this also applies when only the `maxLevel` parameter is given.    
+    
+__returns__
 
-when no options are given, are undefined or null, then everything including directories are removed as if there were no filters. this also applies when only the `maxLevel` parameter is given.
+associative array of files/directories that were deleted.
 
 ## todo
 
 * add more filtering options (combinations, regex,  etc.)
 * have an asynchronous solution
+* use streams instead
 
 ## license
 
