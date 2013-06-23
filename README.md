@@ -2,6 +2,8 @@
 
 recursively finds files by filter options from a start directory onwards and deletes these. useful if you want to clean up a directory in your node.js app.
 
+you can filter by extensions, names, level in directory structure and file creation date yeah!
+
 ## installation
     
 to install find-delete, use [npm](http://github.com/isaacs/npm):
@@ -53,10 +55,29 @@ var result = findRemoveSync('/tmp', {files: 'dump.log', extension: '.dmp'});
 
 just call it without options because no options means nothing is filtered.
 
-
 ```javascript
 var result = findRemoveSync('/tmp');
 ```
+ 
+### delete all jpg files older than one hour
+
+```javascript
+var result = findRemoveSync('/tmp', {age: {seconds: 3600}, extensions: '.jpg'});
+```
+
+### apply filter options only for two levels inside the /temp directory
+
+```javascript
+var result = findRemoveSync('/tmp', {maxLevel: 2, extensions: '.tmp'});
+```
+
+this deletes any `.tmp` files up to two levels, for example:
+/tmp/level1/level2/a.tmp
+
+but not:
+/tmp/level1/level2/level3/b.tmp
+
+why the heck do we have this option? because of performance. if you do not care about deep subfolders, apply that option to get a speed boost.
 
 ## api
 
@@ -71,8 +92,10 @@ __arguments__
     * files - can be a string or an array of files you want to delete within `dir`. also `*.*` is allowed here if you want to remove all files (but not directories).
     * extensions - this too, can be a string or an array of file extenstions you want to delete within `dir`
     * ignore - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
+    * age.seconds - can be any float number. findRemoveSync then compares it with the file stats and deletes those with creation times older than `age.seconds`
+    * maxLevel - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
 
-when no options are given, are undefined or null, then everything including directories are removed as if there were no filters.
+when no options are given, are undefined or null, then everything including directories are removed as if there were no filters. this also applies when only the `maxLevel` parameter is given.
 
 ## todo
 

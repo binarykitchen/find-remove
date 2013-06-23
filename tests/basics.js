@@ -20,7 +20,29 @@ function generateRandomFilename(ext) {
     return  filename;
 }
 
-// pre defined directories
+/*
+ pre defined directories:
+    + rootDirectory
+
+        * randomFile1 (*.bak)
+        * randomFile2 (*.log)
+        * randomFile3 (*.log)
+    
+        + directory1
+            + directory1_1
+            + directory1_2
+                + directory1_2_1
+                    * randomFile1_2_1_1 (*.log)
+                    * randomFile1_2_1_2 (*.bak)
+                    * randomFile1_2_1_3 (*.bak)
+                    * fixFile1_2_1_4 (something.jpg)
+                    * fixFile1_2_1_5 (something.png)
+                + directory1_2_2
+        + directory2
+            * randomFile2_1 (*.bak)
+
+ */
+
 var directory1 = path.join(rootDirectory, 'directory1');
 var directory2 = path.join(rootDirectory, 'directory2');
 
@@ -112,7 +134,7 @@ module.exports = testCase({
             var result, dir = generateRandomFilename();
 
             result = findRemoveSync(dir);
-            t.ok(result, [], 'findRemoveSync() returned empty an array.');
+            t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync() returned empty an array.');
 
             t.done();
         }
@@ -387,6 +409,100 @@ module.exports = testCase({
             t.strictEqual(typeof result[fixFile1_2_1_5], 'undefined', 'fixFile1_2_1_5 is NOT in result');
 
             t.done();
-        }
-    })   
+        },
+
+        'findRemoveSync(limit to maxLevel = 0)': function(t) {
+            var result = findRemoveSync(rootDirectory, {maxLevel: 0});           
+
+            t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(limit to maxLevel = 0) returned empty an array.');
+
+            t.done();
+        },
+
+        'findRemoveSync(limit to maxLevel = 1)': function(t) {
+            var result = findRemoveSync(rootDirectory, {maxLevel: 1});
+
+            t.strictEqual(Object.keys(result).length, 5, 'findRemoveSync(limit to maxLevel = 1) returned 5 entries.');
+
+            t.done();
+        },
+
+        'findRemoveSync(limit to maxLevel = 2)': function(t) {
+            var result = findRemoveSync(rootDirectory, {maxLevel: 2});
+            
+            t.strictEqual(Object.keys(result).length, 8, 'findRemoveSync(limit to maxLevel = 2) returned 8 entries.');
+
+            t.done();
+        },
+
+        'findRemoveSync(limit to maxLevel = 3)': function(t) {
+            var result = findRemoveSync(rootDirectory, {maxLevel: 3});
+
+            t.strictEqual(Object.keys(result).length, 10, 'findRemoveSync(limit to maxLevel = 3) returned 10 entries.');
+
+            t.done();
+        },
+
+        'findRemoveSync(limit to maxLevel = 3 + bak only)': function(t) {
+            var result = findRemoveSync(rootDirectory, {maxLevel: 2, extensions: '.bak'});
+
+            t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(limit to maxLevel = 3 + bak only) returned 2 entries.');
+
+            t.done();
+        }        
+    }),
+
+    'TC 3: age checks': testCase({
+
+        setUp: function(callback) {
+            createFakeDirectoryTree(callback);
+        },
+        tearDown: function(callback) {
+            destroyFakeDirectoryTree(callback);
+        },
+
+        'findRemoveSync(files older than 10000000000000000 sec)': function(t) {
+            var result = findRemoveSync(rootDirectory, {age: {seconds: 10000000000000000}});
+
+            t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files older than 10000000000000000 sec) returned zero entries.');
+
+            t.done();
+        },        
+        
+        'findRemoveSync(files older than 10 sec)': function(t) {
+            var result = findRemoveSync(rootDirectory, {age: {seconds: 10}});            
+
+            t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files older than 10 sec) returned zero entries.');
+
+            t.done();
+        },
+
+        'findRemoveSync(files older than .001 sec)': function(t) {
+            var result = findRemoveSync(rootDirectory, {age: {seconds: .001}});
+
+            t.strictEqual(Object.keys(result).length, 15, 'findRemoveSync(files older than .001 sec) returned 15 entries.');
+
+            t.done();
+        },
+
+        'findRemoveSync(files older than 2 sec with wait)': function(t) {
+            setTimeout(function() {
+                var result = findRemoveSync(rootDirectory, {age: {seconds: 2}});
+
+                t.strictEqual(Object.keys(result).length, 15, 'findRemoveSync(files older than 2 sec with wait) returned 15 entries.');
+
+                t.done();
+            }, 2100);
+        },
+
+        'findRemoveSync(files older than 2 sec with wait + maxLevel = 1)': function(t) {
+            setTimeout(function() {
+                var result = findRemoveSync(rootDirectory, {maxLevel: 1, age: {seconds: 2}});
+
+                t.strictEqual(Object.keys(result).length, 5, 'findRemoveSync(files older than 2 sec with wait + maxLevel = 1) returned 5 entries.');
+
+                t.done();
+            }, 2100);
+        }        
+    })
 });

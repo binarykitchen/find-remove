@@ -5,63 +5,112 @@ module.exports = findRemoveSync;
 var   fs = require('fs')
     , path = require('path')
     , merge = require('fmerge')
-    , util = require('util');
+    , util = require('util')
+    , rimraf = require('rimraf')
+    , now;
 
 /**
  * findRemoveSync(currentDir, options) takes any start directory and searches files from there for removal.
- * the selection of files for removal depends on the given options. when no options are given,
- * everything is removed as if there were no filters.
+ * the selection of files for removal depends on the given options. when no options are given, or only the maxLevel
+ * parameter is given, then everything is removed as if there were no filters.
  * 
  * beware: everything happens synchronously. 
  *
  *
- * @param {String} currentDir any directory to operate within. it will find files, directories recursively from there.
- * it also deletes the given currentDir.
- * @param options json object with three properties: extensions, files and ignore. they can be a string or an array with multiple values.
+ * @param {String} currentDir any directory to operate within. it will seek files and/or directories recursively from there.
+ * beware that it deletes the given currentDir when no options or only the maxLevel parameter are given.
+ * @param options json object with optional properties like extensions, files, ignore, maxLevel and age.seconds.
  * @return {Object} json object of files and/or directories that were found and successfully removed.
  * @api public
  */
-function findRemoveSync(currentDir, options) {
+function findRemoveSync(currentDir, options, currentLevel) {
     
-    var removed = {};
+    var removed = [];
 
-    if (fs.existsSync(currentDir)) {       
+    if (fs.existsSync(currentDir)) {
 
-        var filesInDir = fs.readdirSync(currentDir);
+        var maxLevel = getMaxLevel(options);
+        
+        if (currentLevel === undefined)
+            currentLevel = 0;
+        else
+            currentLevel++;
+        
+        if (currentLevel < 1)
+            now = new Date().getTime();
 
-        filesInDir.forEach(function(file) {
+        // check directore before deleting files inside to maintain the original creation time, because
+        // linux modifies creation date of folders when files have been deleted inside.
+        var deleteDirectory = doDeleteDirectory(currentDir, options, currentLevel);
 
-            var currentFile = path.join(currentDir, file);
-
-            if (fs.statSync(currentFile).isDirectory()) {
-                // the recursive call 
-                var result = findRemoveSync(currentFile, options);
-                
-                // merge results
-                removed = merge(removed, result);
-            } else {
-                
-                if (doDelete(currentFile, options)) {
-                    fs.unlinkSync(currentFile);
-                    removed[currentFile] = true;
+        if (maxLevel === -1 || currentLevel < maxLevel) {
+            var filesInDir = fs.readdirSync(currentDir);
+    
+            filesInDir.forEach(function(file) {
+    
+                var currentFile = path.join(currentDir, file);
+    
+                if (fs.statSync(currentFile).isDirectory()) {
+                    // the recursive call 
+                    var result = findRemoveSync(currentFile, options, currentLevel);
+                    
+                    // merge results
+                    removed = merge(removed, result);
+                } else {
+                    
+                    if (doDeleteFile(currentFile, options)) {
+                        fs.unlinkSync(currentFile);
+                        removed[currentFile] = true;
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        // when no option is given, delete directory.
-        // because all the options are file-related.
-        if (!options) {
-            fs.rmdirSync(currentDir);
-            removed[currentDir] = true;
+        if (deleteDirectory) {
+            try {
+                rimraf.sync(currentDir);
+                removed[currentDir] = true
+            } catch (err) {
+                throw err;
+            }
         }
     }
     
     return removed;
 }
 
-function doDelete(currentFile, options) {
+function doDeleteDirectory(currentDir, options, currentLevel) {
+    var optionsCount = options ? Object.keys(options).length : 0;    
+    var doDelete     = optionsCount < 1;
     
-    var extensions = (options && options.extensions) ? options.extensions : null;    
+    if (!doDelete && currentLevel > 0) {
+        
+        if (options.maxLevel && optionsCount === 1) {
+            
+            var maxLevel = getMaxLevel(options);               
+            doDelete = currentLevel <= maxLevel;
+            
+        } else {
+            var ageSeconds = getAgeSeconds(options);
+            
+            if (ageSeconds)
+                doDelete = isOlder(currentDir, ageSeconds);
+        }
+    }
+    
+    return doDelete;
+}
+
+function isOlder(path, ageSeconds) {
+    var     stats = fs.statSync(path)
+        ,   ctime = stats.ctime.getTime();
+
+    return (ctime + (ageSeconds * 1000)) < now;
+}
+
+function doDeleteFile(currentFile, options) {
+    
+    var extensions = (options && options.extensions) ? options.extensions : null;   
     var files      = (options && options.files) ? options.files : null;
     var ignore     = (options && options.ignore) ? options.ignore : null;
 
@@ -91,13 +140,27 @@ function doDelete(currentFile, options) {
         }
     }
 
-    if (doDelete && ignore) {               
+    if (doDelete && ignore) {
         if (util.isArray(ignore))
             doDelete = !(ignore.indexOf(basename) !== -1);
-        else {
+        else
             doDelete = !(basename === ignore);
-        }
+    }
+
+    if (doDelete) {
+        var ageSeconds = getAgeSeconds(options);
+    
+        if (ageSeconds)
+            doDelete = isOlder(currentFile, ageSeconds);
     }
     
     return doDelete;
+}
+
+function getMaxLevel(options) {
+    return (options && options.hasOwnProperty('maxLevel')) ? options.maxLevel : -1;
+}
+
+function getAgeSeconds(options) {
+    return (options && options.age && options.age.seconds) ? options.age.seconds : null;
 }
