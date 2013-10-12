@@ -1,17 +1,19 @@
-# find-delete
+# find-remove
+
+[![Build Status](https://travis-ci.org/binarykitchen/find-remove.png?branch=master)](https://travis-ci.org/binarykitchen/find-remove)
 
 recursively finds files by filter options from a start directory onwards and deletes these. useful if you want to clean up a directory in your node.js app.
 
 you can filter by extensions, names, level in directory structure and file creation date yeah!
 
 ## installation
-    
-to install find-delete, use [npm](http://github.com/isaacs/npm):
+
+to install find-remove, use [npm](http://github.com/isaacs/npm):
 
     $ npm install find-remove
-    
+
 then in your node.js app, get reference to the function like that:
-    
+
 ```javascript
 var findRemoveSync = require('find-remove');
 ```
@@ -29,7 +31,7 @@ the return value `result` is a json object with successfully deleted files. if y
 ```
 {
     '/tmp/haumiblau.bak': true,
-    '/tmp/dump.log': true 
+    '/tmp/dump.log': true
 }
 ```
 
@@ -58,7 +60,7 @@ just call it without options because no options means nothing is filtered.
 ```javascript
 var result = findRemoveSync('/tmp');
 ```
- 
+
 ### delete all jpg files older than one hour
 
 ```javascript
@@ -84,7 +86,7 @@ why the heck do we have this option? because of performance. if you do not care 
 ### findRemoveSync(dir, options)
 
 findRemoveSync takes any start directory and searches files from there for removal. the selection of files for removal depends on the given options. and at last, it deletes the selected files/directories.
- 
+
 __arguments__
 
 * dir - any directory to search for files for deletion
@@ -95,9 +97,9 @@ __arguments__
     * age.seconds - can be any float number. findRemoveSync then compares it with the file stats and deletes those with creation times older than `age.seconds`
     * maxLevel - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
     * test - advanced: set to true for a test run, meaning it does not delete anything but returns an array of files/directories it would have deleted.
-    
-when no options are given, are undefined or null, then everything including directories are removed as if there were no filters. this also applies when only the `maxLevel` parameter is given.    
-    
+
+when no options are given, are undefined or null, then everything including directories are removed as if there were no filters. this also applies when only the `maxLevel` parameter is given.
+
 __returns__
 
 associative array of files/directories that were deleted.
