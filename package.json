@@ -18,17 +18,17 @@
     "file stats"
   ],
   "dependencies": {
-    "fmerge": "~1.0",
-    "rimraf": "~2.2"
+    "fmerge": "^1.1.0",
+    "rimraf": "^2.2"
   },
   "devDependencies": {
-    "nodeunit": "~0.8",
-    "randomstring": "~1.0.2",
-    "mkdirp": "~0.3.5",
-    "async": "~0.2.9"
+    "nodeunit": "^0.8.7",
+    "randomstring": "^1.0.2",
+    "mkdirp": "^0.5.0",
+    "async": "^0.8.0"
   },
   "engines": {
-    "node": ">=0.10.3"
+    "node": ">=0.10.24"
   },
   "scripts": {
     "test": "nodeunit tests/basics.js"
