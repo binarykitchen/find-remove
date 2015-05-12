@@ -92,7 +92,7 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
     var optionsCount = options ? Object.keys(options).length : 0;
     var doDelete     = optionsCount < 1;
 
-    var basename = path.basename(currentFile);
+    var basename = path.basename(currentDir);
 
     if (!doDelete && dirs) {
         if (util.isArray(dirs))
