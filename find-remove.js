@@ -6,7 +6,7 @@ var   fs = require('fs')
     , path = require('path')
     , merge = require('fmerge')
     , util = require('util')
-    , rimraf = require('rimraf')    
+    , rimraf = require('rimraf')
     , now
     , testRun;
 
@@ -14,8 +14,8 @@ var   fs = require('fs')
  * findRemoveSync(currentDir, options) takes any start directory and searches files from there for removal.
  * the selection of files for removal depends on the given options. when no options are given, or only the maxLevel
  * parameter is given, then everything is removed as if there were no filters.
- * 
- * beware: everything happens synchronously. 
+ *
+ * beware: everything happens synchronously.
  *
  *
  * @param {String} currentDir any directory to operate within. it will seek files and/or directories recursively from there.
@@ -25,21 +25,21 @@ var   fs = require('fs')
  * @api public
  */
 function findRemoveSync(currentDir, options, currentLevel) {
-    
+
     var removed = [];
 
     if (fs.existsSync(currentDir)) {
 
         var maxLevel = getMaxLevel(options);
-        
+
         if (currentLevel === undefined)
             currentLevel = 0;
         else
             currentLevel++;
-        
+
         if (currentLevel < 1) {
             now = new Date().getTime();
-            testRun = isTestRun(options); 
+            testRun = isTestRun(options);
         }
 
         // check directore before deleting files inside to maintain the original creation time, because
@@ -48,23 +48,23 @@ function findRemoveSync(currentDir, options, currentLevel) {
 
         if (maxLevel === -1 || currentLevel < maxLevel) {
             var filesInDir = fs.readdirSync(currentDir);
-    
+
             filesInDir.forEach(function(file) {
-    
+
                 var currentFile = path.join(currentDir, file);
-    
+
                 if (fs.statSync(currentFile).isDirectory()) {
-                    // the recursive call 
+                    // the recursive call
                     var result = findRemoveSync(currentFile, options, currentLevel);
-                    
+
                     // merge results
                     removed = merge(removed, result);
                 } else {
-                    
+
                     if (doDeleteFile(currentFile, options)) {
                         if (!testRun)
                             fs.unlinkSync(currentFile);
-                        
+
                         removed[currentFile] = true;
                     }
                 }
@@ -75,36 +75,48 @@ function findRemoveSync(currentDir, options, currentLevel) {
             try {
                 if (!testRun)
                     rimraf.sync(currentDir);
-                
+
                 removed[currentDir] = true
             } catch (err) {
                 throw err;
             }
         }
     }
-    
+
     return removed;
 }
 
 function doDeleteDirectory(currentDir, options, currentLevel) {
+
+    var dirs         = (options && options.dirs) ? options.dirs : null;
     var optionsCount = options ? Object.keys(options).length : 0;
     var doDelete     = optionsCount < 1;
-    
+
+    var basename = path.basename(currentDir);
+
+    if (!doDelete && dirs) {
+        if (util.isArray(dirs))
+            doDelete = dirs.indexOf(basename) !== -1;
+        else {
+            doDelete = (basename === dirs);
+        }
+    }
+
     if (!doDelete && currentLevel > 0) {
-        
+
         if (options.maxLevel && optionsCount === 1) {
-            
+
             var maxLevel = getMaxLevel(options);
             doDelete = currentLevel <= maxLevel;
-            
+
         } else {
             var ageSeconds = getAgeSeconds(options);
-            
+
             if (ageSeconds)
                 doDelete = isOlder(currentDir, ageSeconds);
         }
     }
-    
+
     return doDelete;
 }
 
@@ -116,16 +128,17 @@ function isOlder(path, ageSeconds) {
 }
 
 function doDeleteFile(currentFile, options) {
-    
-    var extensions = (options && options.extensions) ? options.extensions : null;   
+
+    var extensions = (options && options.extensions) ? options.extensions : null;
     var files      = (options && options.files) ? options.files : null;
+    var dirs       = (options && options.dirs) ? options.dirs : null;
     var ignore     = (options && options.ignore) ? options.ignore : null;
 
     // return the last portion of a path, the filename aka basename
     var basename = path.basename(currentFile);
-    
+
     // by default it deletes anything
-    var doDelete = !extensions && !files;
+    var doDelete = !extensions && !files && !dirs;
 
     if (!doDelete && extensions) {
         var currentExt = path.extname(currentFile);
@@ -156,11 +169,11 @@ function doDeleteFile(currentFile, options) {
 
     if (doDelete) {
         var ageSeconds = getAgeSeconds(options);
-    
+
         if (ageSeconds)
             doDelete = isOlder(currentFile, ageSeconds);
     }
-    
+
     return doDelete;
 }
 
