@@ -17,7 +17,7 @@ function generateRandomFilename(ext) {
     if (ext)
         filename += '.' + ext;
 
-    return  filename;
+    return filename;
 }
 
 /*
@@ -27,7 +27,7 @@ function generateRandomFilename(ext) {
         * randomFile1 (*.bak)
         * randomFile2 (*.log)
         * randomFile3 (*.log)
-    
+
         + directory1
             + directory1_1
             + directory1_2
@@ -38,16 +38,22 @@ function generateRandomFilename(ext) {
                     * fixFile1_2_1_4 (something.jpg)
                     * fixFile1_2_1_5 (something.png)
                 + directory1_2_2
+            + CVS (directory1_3)
+                * randomFile1_3_1
         + directory2
             * randomFile2_1 (*.bak)
+        + CVS (directory3)
+            * randomFile3_1
 
  */
 
 var directory1 = path.join(rootDirectory, 'directory1');
 var directory2 = path.join(rootDirectory, 'directory2');
+var directory3 = path.join(rootDirectory, 'CVS');
 
 var directory1_1 = path.join(directory1, 'directory1_1');
 var directory1_2 = path.join(directory1, 'directory1_2');
+var directory1_3 = path.join(directory1, 'CVS');
 
 var directory1_2_1 = path.join(directory1_2, 'directory1_2_1');
 var directory1_2_2 = path.join(directory1_2, 'directory1_2_2');
@@ -60,12 +66,15 @@ var randomFile2 = path.join(rootDirectory, randomFilename2);
 var randomFile3 = path.join(rootDirectory, generateRandomFilename('log'));
 
 var randomFile2_1 = path.join(directory2, generateRandomFilename('bak'));
+var randomFile3_1 = path.join(directory3, generateRandomFilename());
 
 var randomFilename1_2_1_1 = generateRandomFilename('log');
 var randomFile1_2_1_1 = path.join(directory1_2_1, randomFilename1_2_1_1);
 var randomFile1_2_1_2 = path.join(directory1_2_1, generateRandomFilename('bak'));
 var randomFilename1_2_1_3 = generateRandomFilename('bak');
 var randomFile1_2_1_3 = path.join(directory1_2_1, randomFilename1_2_1_3);
+var randomFile1_3_1 = path.join(directory1_3, generateRandomFilename());
+
 var fixFilename1_2_1_4 = 'something.jpg';
 var fixFile1_2_1_4 = path.join(directory1_2_1, fixFilename1_2_1_4);
 var fixFilename1_2_1_5 = 'something.png';
@@ -81,31 +90,31 @@ function makeFile(file, callback) {
 }
 
 function createFakeDirectoryTree(callback) {
-    
+
     async.series(
         [
             function(callback) {mkdirp(directory1, callback);},
             function(callback) {mkdirp(directory2, callback);},
-            
+
             function(callback) {mkdirp(directory1_1, callback);},
             function(callback) {mkdirp(directory1_2, callback);},
-            
+
             function(callback) {mkdirp(directory1_2_1, callback);},
             function(callback) {mkdirp(directory1_2_2, callback);},
-            
+
             function(callback) {makeFile(randomFile1, callback);},
             function(callback) {makeFile(randomFile2, callback);},
             function(callback) {makeFile(randomFile3, callback);},
-            
+
             function(callback) {makeFile(randomFile2_1, callback);},
-            
+
             function(callback) {makeFile(randomFile1_2_1_1, callback);},
             function(callback) {makeFile(randomFile1_2_1_2, callback);},
             function(callback) {makeFile(randomFile1_2_1_3, callback);},
             function(callback) {makeFile(fixFile1_2_1_4, callback);},
             function(callback) {makeFile(fixFile1_2_1_5, callback);}
         ],
-        
+
         function(err) {
             if (err) {
                 console.error(err);
@@ -121,7 +130,7 @@ function destroyFakeDirectoryTree(callback) {
 }
 
 module.exports = testCase({
-    
+
     'TC 1: tests without real files': testCase({
         'loading findRemoveSync function (require)': function(t) {
             findRemoveSync = require('../find-remove.js');
@@ -185,7 +194,7 @@ module.exports = testCase({
             t.equal(exists1_2, true, 'findRemoveSync(directory2) did not remove directory1_2');
 
             t.ok(result[randomFile2_1], 'randomFile2_1 is in result');
-            
+
             t.strictEqual(typeof result[randomFile1], 'undefined', 'randomFile1_2_1_2 is NOT in result');
             t.strictEqual(typeof result[randomFile1_2_1_3], 'undefined', 'randomFile1_2_1_3 is NOT in result');
 
@@ -198,7 +207,7 @@ module.exports = testCase({
             var exists1 = fs.existsSync(randomFile1);
             var exists2_1 = fs.existsSync(randomFile2_1);
             var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
-            var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);           
+            var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
 
             t.equal(exists1, false, 'findRemoveSync(all bak files from root) removed randomFile1 fine');
             t.equal(exists2_1, false, 'findRemoveSync(all bak files from root) removed exists2_1 fine');
@@ -211,7 +220,7 @@ module.exports = testCase({
             var exists1_2_1 = fs.existsSync(directory1_2_1);
 
             t.equal(exists3, true, 'findRemoveSync(all bak files from root) did not remove log file exists3');
-            t.equal(exists1_2_1_1, true, 'findRemoveSync(all bak files from root) did not remove log file exists1_2_1_1');            
+            t.equal(exists1_2_1_1, true, 'findRemoveSync(all bak files from root) did not remove log file exists1_2_1_1');
             t.equal(exists0, true, 'findRemoveSync(all bak files from root) did not remove root directory');
             t.equal(exists1_2_1, true, 'findRemoveSync(all bak files from root) did not remove directory directory1_2_1');
 
@@ -228,7 +237,7 @@ module.exports = testCase({
             t.equal(exists1_2_1_2, true, 'findRemoveSync(all log files from directory1_2_1) did not remove file randomFile1_2_1_2');
 
             var exists1_2_1 = fs.existsSync(directory1_2_1);
-            t.equal(exists1_2_1, true, 'findRemoveSync(all log files from directory1_2_1) did not remove directory directory1_2_1');            
+            t.equal(exists1_2_1, true, 'findRemoveSync(all log files from directory1_2_1) did not remove directory directory1_2_1');
 
             t.done();
         },
@@ -240,7 +249,7 @@ module.exports = testCase({
             var exists2_1 = fs.existsSync(randomFile2_1);
             var exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2);
             var exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3);
-            
+
             var exists2 = fs.existsSync(randomFile2);
             var exists3 = fs.existsSync(randomFile3);
             var exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1);
@@ -256,7 +265,7 @@ module.exports = testCase({
 
             var exists1_1 = fs.existsSync(directory1_1);
             t.equal(exists1_1, true, 'findRemoveSync(all bak and log files from root) did not remove directory1_1');
-            
+
             t.done();
         },
 
@@ -412,7 +421,7 @@ module.exports = testCase({
         },
 
         'findRemoveSync(limit to maxLevel = 0)': function(t) {
-            var result = findRemoveSync(rootDirectory, {maxLevel: 0});           
+            var result = findRemoveSync(rootDirectory, {maxLevel: 0});
 
             t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(limit to maxLevel = 0) returned empty an array.');
 
@@ -429,7 +438,7 @@ module.exports = testCase({
 
         'findRemoveSync(limit to maxLevel = 2)': function(t) {
             var result = findRemoveSync(rootDirectory, {maxLevel: 2});
-            
+
             t.strictEqual(Object.keys(result).length, 8, 'findRemoveSync(limit to maxLevel = 2) returned 8 entries.');
 
             t.done();
@@ -451,6 +460,48 @@ module.exports = testCase({
             t.done();
         },
 
+        'findRemoveSync(single dir)': function(t) {
+            var result = findRemoveSync(rootDirectory, {dir: 'directory1_2'});
+
+            var exists1_1 = fs.existsSync(directory1_1);
+            t.equal(exists1_1, true, 'findRemoveSync(single dir) did not remove directory1_1');
+
+            var exists1_2 = fs.existsSync(directory1_2);
+            t.equal(exists1_2, false, 'findRemoveSync(single dir) removed directory1_2');
+
+            t.done();
+        },
+
+        'findRemoveSync(two directories)': function(t) {
+            var result = findRemoveSync(rootDirectory, {dir: ['directory1_1', 'directory1_2']});
+
+            var exists1_1 = fs.existsSync(directory1_1);
+            t.equal(exists1_1, false, 'findRemoveSync(remove single dir) removed directory1_1');
+
+            var exists1_2 = fs.existsSync(directory1_2);
+            t.equal(exists1_2, false, 'findRemoveSync(remove single dir) removed directory1_2');
+
+            t.done();
+        },
+
+        'findRemoveSync(directories with the same basename)': function(t) {
+            var result = findRemoveSync(rootDirectory, {dir: 'CVS'});
+
+            var exists1_3 = fs.existsSync(directory1_3);
+            t.equal(exists1_3, false, 'findRemoveSync(directories with the same basename) removed root/directory1/CVS');
+
+            var exists3 = fs.existsSync(directory3);
+            t.equal(exists3, false, 'findRemoveSync(directories with the same basename) removed root/CVS');
+
+            var exists1_1 = fs.existsSync(directory1_1);
+            t.equal(exists1_1, true, 'findRemoveSync(remove single dir) did not remove directory1_1');
+
+            var exists1_2 = fs.existsSync(directory1_2);
+            t.equal(exists1_2, true, 'findRemoveSync(remove single dir) did not remove directory1_2');
+
+            t.done();
+        },
+
         'findRemoveSync(test run)': function(t) {
             var result = findRemoveSync(rootDirectory, {test: true});
 
@@ -463,7 +514,7 @@ module.exports = testCase({
             t.equal(exists1_2_1_3, true, 'findRemoveSync(test run) did not remove randomFile1_2_1_3');
 
             var exists1_1 = fs.existsSync(directory1_1);
-            t.equal(exists1_1, true, 'findRemoveSync(test run) did not remove directory1_1');            
+            t.equal(exists1_1, true, 'findRemoveSync(test run) did not remove directory1_1');
 
             t.done();
         }
@@ -484,10 +535,10 @@ module.exports = testCase({
             t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files older than 10000000000000000 sec) returned zero entries.');
 
             t.done();
-        },        
-        
+        },
+
         'findRemoveSync(files older than 10 sec)': function(t) {
-            var result = findRemoveSync(rootDirectory, {age: {seconds: 10}});            
+            var result = findRemoveSync(rootDirectory, {age: {seconds: 10}});
 
             t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files older than 10 sec) returned zero entries.');
 
@@ -520,6 +571,6 @@ module.exports = testCase({
 
                 t.done();
             }, 2100);
-        }        
+        }
     })
 });

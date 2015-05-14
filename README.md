@@ -53,6 +53,12 @@ var result = findRemoveSync(rootDirectory, {files: 'dump.log', ignore: 'haumibla
 var result = findRemoveSync('/tmp', {files: 'dump.log', extension: '.dmp'});
 ```
 
+### delete recursively all directories called 'CVS' within /dist/
+
+```javascript
+var result = findRemoveSync('/dist', {dir: 'CVS'});
+```
+
 ### delete everything inside AND including the /temp directory
 
 just call it without options because no options means nothing is filtered.
@@ -92,6 +98,7 @@ __arguments__
 * dir - any directory to search for files for deletion
 * options - currently two properties are supported:
     * files - can be a string or an array of files you want to delete within `dir`. also `*.*` is allowed here if you want to remove all files (but not directories).
+    * dir - can be a string or an array of directories you want to delete within `dir`.
     * extensions - this too, can be a string or an array of file extenstions you want to delete within `dir`
     * ignore - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
     * age.seconds - can be any float number. findRemoveSync then compares it with the file stats and deletes those with creation times older than `age.seconds`
