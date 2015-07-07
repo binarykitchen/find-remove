@@ -91,6 +91,10 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
     var dir          = (options && options.dir) ? options.dir : null;
     var optionsCount = options ? Object.keys(options).length : 0;
     var doDelete     = optionsCount < 1;
+    // if 'onlyFiles' option is true, no need to delete directories
+    var onlyFiles = options && options.onlyFiles;
+    if(onlyFiles) return false;
+
 
     var basename = path.basename(currentDir);
 
