@@ -1,11 +1,11 @@
-var testCase        = require('nodeunit').testCase,
-    randomstring    = require('randomstring'),
-    mkdirp          = require('mkdirp'),
-    path            = require('path'),
-    fs              = require('fs'),
-    async           = require('async'),
-    rimraf          = require('rimraf'),
-    findRemoveSync
+var testCase     = require('nodeunit').testCase,
+    randomstring = require('randomstring'),
+    mkdirp       = require('mkdirp'),
+    path         = require('path'),
+    fs           = require('fs'),
+    async        = require('async'),
+    rimraf       = require('rimraf'),
+    findRemoveSync;
 
 var rootDirectory = path.join(require('os').tmpDir(), 'find-remove');
 
@@ -64,31 +64,24 @@ var randomFile2 = path.join(rootDirectory, randomFilename2);
 var randomFile3 = path.join(rootDirectory, generateRandomFilename('log'));
 
 var randomFile2_1 = path.join(directory2, generateRandomFilename('bak'));
-var randomFile3_1 = path.join(directory3, generateRandomFilename());
 
 var randomFilename1_2_1_1 = generateRandomFilename('log');
 var randomFile1_2_1_1 = path.join(directory1_2_1, randomFilename1_2_1_1);
 var randomFile1_2_1_2 = path.join(directory1_2_1, generateRandomFilename('bak'));
 var randomFilename1_2_1_3 = generateRandomFilename('bak');
 var randomFile1_2_1_3 = path.join(directory1_2_1, randomFilename1_2_1_3);
-var randomFile1_3_1 = path.join(directory1_3, generateRandomFilename());
 
 var fixFilename1_2_1_4 = 'something.jpg';
 var fixFile1_2_1_4 = path.join(directory1_2_1, fixFilename1_2_1_4);
 var fixFilename1_2_1_5 = 'something.png';
 var fixFile1_2_1_5 = path.join(directory1_2_1, fixFilename1_2_1_5);
 
-function makeFile(file, options, callback) {
+function makeFile(file, callback) {
     fs.writeFile(file, '', function(err) {
         if (err)
             callback(err);
-        else {
-            if (options.mode) {
-                fs.chmodSync(file, options.mode)
-            }
-
+        else
             callback(null);
-        }
     })
 }
 
@@ -133,6 +126,7 @@ function destroyFakeDirectoryTree(callback) {
 }
 
 module.exports = testCase({
+
     'TC 1: tests without real files': testCase({
         'loading findRemoveSync function (require)': function(t) {
             findRemoveSync = require('../find-remove.js');
@@ -463,7 +457,7 @@ module.exports = testCase({
         },
 
         'findRemoveSync(single dir)': function(t) {
-            var result = findRemoveSync(rootDirectory, {dir: 'directory1_2'});
+            findRemoveSync(rootDirectory, {dir: 'directory1_2'});
 
             var exists1_1 = fs.existsSync(directory1_1);
             t.equal(exists1_1, true, 'findRemoveSync(single dir) did not remove directory1_1');
@@ -475,7 +469,7 @@ module.exports = testCase({
         },
 
         'findRemoveSync(two directories)': function(t) {
-            var result = findRemoveSync(rootDirectory, {dir: ['directory1_1', 'directory1_2']});
+            findRemoveSync(rootDirectory, {dir: ['directory1_1', 'directory1_2']});
 
             var exists1_1 = fs.existsSync(directory1_1);
             t.equal(exists1_1, false, 'findRemoveSync(remove single dir) removed directory1_1');
@@ -487,7 +481,7 @@ module.exports = testCase({
         },
 
         'findRemoveSync(directories with the same basename)': function(t) {
-            var result = findRemoveSync(rootDirectory, {dir: 'CVS'});
+            findRemoveSync(rootDirectory, {dir: 'CVS'});
 
             var exists1_3 = fs.existsSync(directory1_3);
             t.equal(exists1_3, false, 'findRemoveSync(directories with the same basename) removed root/directory1/CVS');
@@ -519,7 +513,7 @@ module.exports = testCase({
             t.equal(exists1_1, true, 'findRemoveSync(test run) did not remove directory1_1');
 
             t.done();
-        },
+        }
     }),
 
     'TC 3: age checks': testCase({
@@ -547,10 +541,10 @@ module.exports = testCase({
             t.done();
         },
 
-        'findRemoveSync(files older than .001 sec)': function(t) {
-            var result = findRemoveSync(rootDirectory, {age: {seconds: .001}});
+        'findRemoveSync(files older than .005 sec)': function(t) {
+            var result = findRemoveSync(rootDirectory, {age: {seconds: .005}});
 
-            t.strictEqual(Object.keys(result).length, 15, 'findRemoveSync(files older than .001 sec) returned 15 entries.');
+            t.strictEqual(Object.keys(result).length, 15, 'findRemoveSync(files older than .005 sec) returned 15 entries.');
 
             t.done();
         },
