@@ -19,13 +19,13 @@
   ],
   "dependencies": {
     "fmerge": "1.2.0",
-    "rimraf": "2.4.2"
+    "rimraf": "2.4.3"
   },
   "devDependencies": {
     "nodeunit": "0.9.1",
-    "randomstring": "1.0.7",
+    "randomstring": "1.0.8",
     "mkdirp": "0.5.1",
-    "async": "1.4.0"
+    "async": "1.4.2"
   },
   "engines": {
     "node": ">=0.10.24"

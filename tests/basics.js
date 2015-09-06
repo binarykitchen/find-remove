@@ -1,13 +1,11 @@
-"use strict";
-
-var   testCase = require('nodeunit').testCase
-    , randomstring = require('randomstring')
-    , mkdirp = require('mkdirp')
-    , path = require('path')
-    , fs = require('fs')
-    , async = require('async')
-    , rimraf = require('rimraf')
-    , findRemoveSync;
+var testCase        = require('nodeunit').testCase,
+    randomstring    = require('randomstring'),
+    mkdirp          = require('mkdirp'),
+    path            = require('path'),
+    fs              = require('fs'),
+    async           = require('async'),
+    rimraf          = require('rimraf'),
+    findRemoveSync
 
 var rootDirectory = path.join(require('os').tmpDir(), 'find-remove');
 
@@ -80,12 +78,17 @@ var fixFile1_2_1_4 = path.join(directory1_2_1, fixFilename1_2_1_4);
 var fixFilename1_2_1_5 = 'something.png';
 var fixFile1_2_1_5 = path.join(directory1_2_1, fixFilename1_2_1_5);
 
-function makeFile(file, callback) {
+function makeFile(file, options, callback) {
     fs.writeFile(file, '', function(err) {
         if (err)
             callback(err);
-        else
+        else {
+            if (options.mode) {
+                fs.chmodSync(file, options.mode)
+            }
+
             callback(null);
+        }
     })
 }
 
@@ -130,7 +133,6 @@ function destroyFakeDirectoryTree(callback) {
 }
 
 module.exports = testCase({
-
     'TC 1: tests without real files': testCase({
         'loading findRemoveSync function (require)': function(t) {
             findRemoveSync = require('../find-remove.js');
@@ -517,7 +519,7 @@ module.exports = testCase({
             t.equal(exists1_1, true, 'findRemoveSync(test run) did not remove directory1_1');
 
             t.done();
-        }
+        },
     }),
 
     'TC 3: age checks': testCase({
