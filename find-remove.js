@@ -1,14 +1,12 @@
-"use strict";
-
 module.exports = findRemoveSync;
 
-var   fs = require('fs')
-    , path = require('path')
-    , merge = require('fmerge')
-    , util = require('util')
-    , rimraf = require('rimraf')
-    , now
-    , testRun;
+var fs      = require('fs'),
+    path    = require('path'),
+    merge   = require('fmerge'),
+    util    = require('util'),
+    rimraf  = require('rimraf'),
+    now,
+    testRun
 
 /**
  * findRemoveSync(currentDir, options) takes any start directory and searches files from there for removal.
@@ -121,8 +119,8 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
 }
 
 function isOlder(path, ageSeconds) {
-    var     stats = fs.statSync(path)
-        ,   ctime = stats.ctime.getTime();
+    var stats = fs.statSync(path),
+        ctime = stats.ctime.getTime()
 
     return (ctime + (ageSeconds * 1000)) < now;
 }
