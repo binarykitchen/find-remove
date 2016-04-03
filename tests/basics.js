@@ -541,10 +541,10 @@ module.exports = testCase({
             t.done();
         },
 
-        'findRemoveSync(files older than .005 sec)': function(t) {
-            var result = findRemoveSync(rootDirectory, {age: {seconds: .005}});
+        'findRemoveSync(files older than .0005 sec)': function(t) {
+            var result = findRemoveSync(rootDirectory, {age: {seconds: 0.0005}});
 
-            t.strictEqual(Object.keys(result).length, 15, 'findRemoveSync(files older than .005 sec) returned 15 entries.');
+            t.strictEqual(Object.keys(result).length, 15, 'findRemoveSync(files older than .0005 sec) returned 15 entries.');
 
             t.done();
         },
