@@ -38,19 +38,19 @@ the return value `result` is a json object with successfully deleted files. if y
 ### 2. delete all files called 'dump.log' within the /temp/ directory and within its subfolders
 
 ```javascript
-var result = findRemoveSync(/temp', {files: 'dump.log'})
+var result = findRemoveSync('/temp', {files: 'dump.log'})
 ```
 
 ### 3. same as above, but also deletes any subfolders
 
 ```javascript
-var result = findRemoveSync(/temp', {files: 'dump.log', dir: '*'})
+var result = findRemoveSync('/temp', {files: 'dump.log', dir: '*'})
 ```
 
 ### 4. delete all *.bak files but not file 'haumiblau.bak'
 
 ```javascript
-var result = findRemoveSync(/temp', {extensions: ['.bak'], ignore: 'haumiblau.bak'})
+var result = findRemoveSync('/temp', {extensions: ['.bak'], ignore: 'haumiblau.bak'})
 ```
 
 ### 5. delete recursively any subdirectory called 'CVS' within /dist/
