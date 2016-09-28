@@ -10,7 +10,7 @@ you can filter by extensions, names, level in directory structure, file creation
 
 to install find-remove, use [npm](http://github.com/isaacs/npm):
 
-    $ npm install find-remove
+    $ npm install -S find-remove
 
 then in your node.js app, get reference to the function like that:
 
@@ -20,7 +20,7 @@ var findRemoveSync = require('find-remove')
 
 ## quick examples
 
-### delete all *.bak or *.log files within the /temp/ directory
+### 1. delete all *.bak or *.log files within the /temp/ directory
 
 ```javascript
 var result = findRemoveSync('/temp', {extensions: ['.bak', '.log']})
@@ -35,37 +35,37 @@ the return value `result` is a json object with successfully deleted files. if y
 }
 ```
 
-### delete all files called 'dump.log' within the /temp/ directory and within its subfolders
+### 2. delete all files called 'dump.log' within the /temp/ directory and within its subfolders
 
 ```javascript
-var result = findRemoveSync(rootDirectory, {files: 'dump.log'})
+var result = findRemoveSync(/temp', {files: 'dump.log'})
 ```
 
-### same as above, but also deletes any subfolders
+### 3. same as above, but also deletes any subfolders
 
 ```javascript
-var result = findRemoveSync(rootDirectory, {files: 'dump.log', dir: '*'})
+var result = findRemoveSync(/temp', {files: 'dump.log', dir: '*'})
 ```
 
-### delete all *.bak files but not file 'haumiblau.bak'
+### 4. delete all *.bak files but not file 'haumiblau.bak'
 
 ```javascript
-var result = findRemoveSync(rootDirectory, {extensions: ['.bak'], ignore: 'haumiblau.bak'})
+var result = findRemoveSync(/temp', {extensions: ['.bak'], ignore: 'haumiblau.bak'})
 ```
 
-### delete recursively any subdirectory called 'CVS' within /dist/
+### 5. delete recursively any subdirectory called 'CVS' within /dist/
 
 ```javascript
 var result = findRemoveSync('/dist', {dir: 'CVS'})
 ```
 
-### delete all jpg files older than one hour
+### 6. delete all jpg files older than one hour
 
 ```javascript
 var result = findRemoveSync('/tmp', {age: {seconds: 3600}, extensions: '.jpg'})
 ```
 
-### apply filter options only for two levels inside the /temp directory for all tmp files
+### 7. apply filter options only for two levels inside the /temp directory for all tmp files
 
 ```javascript
 var result = findRemoveSync('/tmp', {maxLevel: 2, extensions: '.tmp'})
@@ -75,9 +75,9 @@ this deletes any `.tmp` files up to two levels, for example: `/tmp/level1/level2
 
 but not `/tmp/level1/level2/level3/b.tmp`
 
-why the heck do we have this maxLevel option? because of performance. if you care about deep subfolders, apply that option to get a speed boost.
+why the heck do we have this `maxLevel` option? because of performance. if you care about deep subfolders, apply that option to get a speed boost.
 
-### delete everything recursively (hey, who needs that when you can use nodejs' fs.unlink?)
+### 8. delete everything recursively (hey, who needs that when you can use nodejs' fs.unlink?)
 
 ```javascript
 var result = findRemoveSync(rootDirectory, {dir: "*", files: "*.*"})
