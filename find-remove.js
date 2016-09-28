@@ -3,18 +3,24 @@ var fs      = require('fs'),
     merge   = require('fmerge'),
     util    = require('util'),
     rimraf  = require('rimraf'),
+
     now,
     testRun
 
 function isOlder(path, ageSeconds) {
-    var stats = fs.statSync(path),
-        mtime = stats.mtime.getTime()
+    var stats          = fs.statSync(path),
+        mtime          = stats.mtime.getTime(),
+        expirationTime = (mtime + (ageSeconds * 1000))
 
-    return (mtime + (ageSeconds * 1000)) < now
+    return now > expirationTime
+}
+
+function hasMaxLevel(options) {
+    return options && options.hasOwnProperty('maxLevel')
 }
 
 function getMaxLevel(options) {
-    return (options && options.hasOwnProperty('maxLevel')) ? options.maxLevel : -1
+    return hasMaxLevel(options) ? options.maxLevel : -1
 }
 
 function getAgeSeconds(options) {
@@ -23,30 +29,25 @@ function getAgeSeconds(options) {
 
 function doDeleteDirectory(currentDir, options, currentLevel) {
 
-    var dir          = (options && options.dir) ? options.dir : null
-    var optionsCount = options ? Object.keys(options).length : 0
-    var doDelete     = optionsCount < 1
+    var doDelete = false
+    var dir      = options && options.dir
 
-    var basename = path.basename(currentDir)
+    if (dir) {
+        var ageSeconds   = getAgeSeconds(options)
+        var basename     = path.basename(currentDir)
 
-    if (!doDelete && dir) {
-        if (util.isArray(dir))
-            doDelete = dir.indexOf(basename) !== -1
-        else
-            doDelete = (basename === dir)
-    }
+        if (util.isArray(dir)) {
+            doDelete = (dir.indexOf("*") !== 1) || (dir.indexOf(basename) !== -1)
+        } else if (basename === dir || dir === "*") {
+            doDelete = true
+        }
 
-    if (!doDelete && currentLevel > 0) {
-
-        if (options.maxLevel && optionsCount === 1) {
-
+        if (doDelete && hasMaxLevel(options) && currentLevel > 0) {
             doDelete = currentLevel <= getMaxLevel(options)
+        }
 
-        } else {
-            var ageSeconds = getAgeSeconds(options)
-
-            if (ageSeconds)
-                doDelete = isOlder(currentDir, ageSeconds)
+        if (ageSeconds && doDelete) {
+            doDelete = isOlder(currentDir, ageSeconds)
         }
     }
 
@@ -54,6 +55,8 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
 }
 
 function doDeleteFile(currentFile, options) {
+    // by default it deletes nothing
+    var doDelete = false
 
     var extensions = (options && options.extensions) ? options.extensions : null
     var files      = (options && options.files) ? options.files : null
@@ -63,26 +66,25 @@ function doDeleteFile(currentFile, options) {
     // return the last portion of a path, the filename aka basename
     var basename = path.basename(currentFile)
 
-    // by default it deletes anything
-    var doDelete = !extensions && !files && !dir
+    if (files) {
+        if (util.isArray(files))
+            doDelete = (files.indexOf("*.*") !== -1) || (files.indexOf(basename) !== -1)
+        else {
+            if (files === '*.*') {
+                doDelete = true
+            } else {
+                doDelete = (basename === files)
+            }
+        }
+    }
 
     if (!doDelete && extensions) {
         var currentExt = path.extname(currentFile)
 
-        if (util.isArray(extensions))
+        if (util.isArray(extensions)) {
             doDelete = extensions.indexOf(currentExt) !== -1
-        else
+        } else {
             doDelete = (currentExt === extensions)
-    }
-
-    if (!doDelete && files) {
-        if (util.isArray(files))
-            doDelete = files.indexOf(basename) !== -1
-        else {
-            if (files === '*.*')
-                doDelete = true
-            else
-                doDelete = (basename === files)
         }
     }
 
@@ -123,11 +125,12 @@ function isTestRun(options) {
  */
 var findRemoveSync = module.exports = function(currentDir, options, currentLevel) {
 
-    var removed = []
+    var removed = {}
 
     if (fs.existsSync(currentDir)) {
 
-        var maxLevel = getMaxLevel(options)
+        var maxLevel = getMaxLevel(options),
+            deleteDirectory = false
 
         if (currentLevel === undefined)
             currentLevel = 0
@@ -137,12 +140,12 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
         if (currentLevel < 1) {
             now = new Date().getTime()
             testRun = isTestRun(options)
+        } else {
+            // check directories before deleting files inside.
+            // this to maintain the original creation time,
+            // because linux modifies creation date of folders when files within have been deleted.
+            deleteDirectory = doDeleteDirectory(currentDir, options, currentLevel)
         }
-
-        // check directories before deleting files inside.
-        // this to maintain the original creation time,
-        // because linux modifies creation date of folders when files within have been deleted.
-        var deleteDirectory = doDeleteDirectory(currentDir, options, currentLevel)
 
         if (maxLevel === -1 || currentLevel < maxLevel) {
             var filesInDir = fs.readdirSync(currentDir)
