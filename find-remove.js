@@ -15,6 +15,26 @@ function isOlder(path, ageSeconds) {
     return now > expirationTime
 }
 
+function hasLimit(options) {
+    return options && options.hasOwnProperty('limit')
+}
+
+function getLimit(options) {
+    return hasLimit(options) ? options.limit : -1
+}
+
+function hasTotalRemoved(options) {
+    return options && options.hasOwnProperty('totalRemoved')
+}
+
+function getTotalRemoved(options) {
+    return hasTotalRemoved(options) ? options.totalRemoved : -2
+}
+
+function isOverTheLimit(options) {
+    return getTotalRemoved(options) >= getLimit(options)
+}
+
 function hasMaxLevel(options) {
     return options && options.hasOwnProperty('maxLevel')
 }
@@ -40,6 +60,10 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
             doDelete = (dir.indexOf("*") !== 1) || (dir.indexOf(basename) !== -1)
         } else if (basename === dir || dir === "*") {
             doDelete = true
+        }
+
+        if (doDelete && hasLimit(options)) {
+            doDelete = !isOverTheLimit(options)
         }
 
         if (doDelete && hasMaxLevel(options) && currentLevel > 0) {
@@ -88,6 +112,10 @@ function doDeleteFile(currentFile, options) {
         }
     }
 
+    if (doDelete && hasLimit(options)) {
+        doDelete = !isOverTheLimit(options)
+    }
+
     if (doDelete && ignore) {
         if (util.isArray(ignore))
             doDelete = !(ignore.indexOf(basename) !== -1)
@@ -127,10 +155,14 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
 
     var removed = {}
 
-    if (fs.existsSync(currentDir)) {
+    if (!isOverTheLimit(options) && fs.existsSync(currentDir)) {
 
         var maxLevel = getMaxLevel(options),
             deleteDirectory = false
+
+        if (hasLimit(options)) {
+            options.totalRemoved = hasTotalRemoved(options) ? getTotalRemoved(options) : 0
+        }
 
         if (currentLevel === undefined)
             currentLevel = 0
@@ -160,6 +192,9 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
 
                     // merge results
                     removed = merge(removed, result)
+                    if (hasTotalRemoved(options))
+                        options.totalRemoved += Object.keys(result).length
+
                 } else {
 
                     if (doDeleteFile(currentFile, options)) {
@@ -167,6 +202,9 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
                             fs.unlinkSync(currentFile)
 
                         removed[currentFile] = true
+                        if (hasTotalRemoved(options))
+                            options.totalRemoved ++
+
                     }
                 }
             })
@@ -177,7 +215,10 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
                 if (!testRun)
                     rimraf.sync(currentDir)
 
-                removed[currentDir] = true
+                if (!hasTotalRemoved(options))
+                    // for limit of files - we do not want to count the directories
+                    removed[currentDir] = true
+
             } catch (err) {
                 throw err
             }

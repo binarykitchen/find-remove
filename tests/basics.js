@@ -703,5 +703,32 @@ module.exports = testCase({
 
             t.done()
         }
+    }),
+
+    'TC 5: limit checks': testCase({
+
+        setUp: function(cb) {
+            createFakeDirectoryTree(cb)
+        },
+        tearDown: function(cb) {
+            destroyFakeDirectoryTree(cb)
+        },
+
+        'findRemoveSync(files older than .0005 sec with limit of 2)': function(t) {
+            var result = findRemoveSync(rootDirectory, {files: "*.*", age: {seconds: 0.0005}, limit: 2})
+
+            t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(files older than .0005 sec) returned 2 entries (out of 11).')
+
+            t.done()
+        },
+
+        'findRemoveSync(files and dirs older than .0005 sec with limit of 5)': function(t) {
+            var result = findRemoveSync(rootDirectory, {files: "*.*", dir: "*", age: {seconds: 0.0005}, limit: 5})
+
+            t.strictEqual(Object.keys(result).length, 5, 'findRemoveSync(files older than .0005 sec) returned 5 entries (out of 19).')
+
+            t.done()
+        }
+
     })
 })

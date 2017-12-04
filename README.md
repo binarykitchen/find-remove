@@ -59,10 +59,10 @@ var result = findRemoveSync('/temp', {extensions: ['.bak'], ignore: 'haumiblau.b
 var result = findRemoveSync('/dist', {dir: 'CVS'})
 ```
 
-### 6. delete all jpg files older than one hour
+### 6. delete all jpg files older than one hour with limit of 100 files deletion per operation
 
 ```javascript
-var result = findRemoveSync('/tmp', {age: {seconds: 3600}, extensions: '.jpg'})
+var result = findRemoveSync('/tmp', {age: {seconds: 3600}, extensions: '.jpg', limit: 100})
 ```
 
 ### 7. apply filter options only for two levels inside the /temp directory for all tmp files
@@ -98,6 +98,7 @@ __arguments__
     * `extensions` - this too, can be a string or an array of file extenstions you want to delete within `dir`.
     * `ignore` - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
     * `age.seconds` - can be any float number. findRemoveSync then compares it with the file stats and deletes those with creation times older than `age.seconds`
+    * `limit` - can be any integer number. Will limit the number of <b>files</b> to be deleted at single operation to be `limit`
     * `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
     * `test` - advanced: set to true for a test run, meaning it does not delete anything but returns a JSON of files/directories it would have deleted. useful for testing.
 
@@ -107,7 +108,7 @@ the unit tests are good examples on how to use the above arguments.
 
 __returns__
 
-JSON of files/directories that were deleted.
+JSON of files/directories that were deleted. For limit option - will only return number of files deleted.
 
 ## todo
 
