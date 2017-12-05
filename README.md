@@ -97,7 +97,7 @@ __arguments__
     * `dir` - can be a string or an array of directories you want to delete within `dir`.
     * `extensions` - this too, can be a string or an array of file extenstions you want to delete within `dir`.
     * `ignore` - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
-    * `age.seconds` - can be any float number. findRemoveSync then compares it with the file stats and deletes those with creation times older than `age.seconds`
+    * `age.seconds` - can be any float number. findRemoveSync then compares it with the file stats and deletes those with modification times older than `age.seconds`
     * `limit` - can be any integer number. Will limit the number of <b>files</b> to be deleted at single operation to be `limit`
     * `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
     * `test` - advanced: set to true for a test run, meaning it does not delete anything but returns a JSON of files/directories it would have deleted. useful for testing.
