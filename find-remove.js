@@ -84,6 +84,7 @@ function doDeleteFile(currentFile, options) {
 
     var extensions = (options && options.extensions) ? options.extensions : null
     var files      = (options && options.files) ? options.files : null
+    var prefix     = (options && options.prefix) ? options.prefix: null
     var dir        = (options && options.dir) ? options.dir : null
     var ignore     = (options && options.ignore) ? options.ignore : null
 
@@ -110,6 +111,10 @@ function doDeleteFile(currentFile, options) {
         } else {
             doDelete = (currentExt === extensions)
         }
+    }
+
+    if (!doDelete && prefix) {
+        doDelete = basename.indexOf(prefix) === 0
     }
 
     if (doDelete && hasLimit(options)) {
