@@ -65,7 +65,13 @@ var result = findRemoveSync('/dist', {dir: 'CVS'})
 var result = findRemoveSync('/tmp', {age: {seconds: 3600}, extensions: '.jpg', limit: 100})
 ```
 
-### 7. apply filter options only for two levels inside the /temp directory for all tmp files
+### 7. delete all files with prefix 'filenamestartswith'
+
+```javascript
+var result = findRemoveSync('/tmp', {prefix: 'filenamestartswith'})
+```
+
+### 8. apply filter options only for two levels inside the /temp directory for all tmp files
 
 ```javascript
 var result = findRemoveSync('/tmp', {maxLevel: 2, extensions: '.tmp'})
@@ -77,7 +83,7 @@ but not `/tmp/level1/level2/level3/b.tmp`
 
 why the heck do we have this `maxLevel` option? because of performance. if you care about deep subfolders, apply that option to get a speed boost.
 
-### 8. delete everything recursively (hey, who needs that when you can use nodejs' fs.unlink?)
+### 9. delete everything recursively (hey, who needs that when you can use nodejs' fs.unlink?)
 
 ```javascript
 var result = findRemoveSync(rootDirectory, {dir: "*", files: "*.*"})
@@ -95,11 +101,12 @@ __arguments__
 * options - currently those properties are supported:
     * `files` - can be a string or an array of files you want to delete within `dir`.
     * `dir` - can be a string or an array of directories you want to delete within `dir`.
-    * `extensions` - this too, can be a string or an array of file extenstions you want to delete within `dir`.
+    * `extensions` - this too, can be a string or an array of file extentions you want to delete within `dir`.
     * `ignore` - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
     * `age.seconds` - can be any float number. findRemoveSync then compares it with the file stats and deletes those with modification times older than `age.seconds`
     * `limit` - can be any integer number. Will limit the number of <b>files</b> to be deleted at single operation to be `limit`
-    * `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
+    * `prefix` - can be any string. Will delete any files that start with `prefix`. 
+    * `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees. 
     * `test` - advanced: set to true for a test run, meaning it does not delete anything but returns a JSON of files/directories it would have deleted. useful for testing.
 
 as a precaution, nothing happens when there are no options.
