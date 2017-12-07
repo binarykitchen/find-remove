@@ -1038,9 +1038,9 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-nodeunit@0.11.1:
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/nodeunit/-/nodeunit-0.11.1.tgz#23d80fd78b43d6c24ee1e4b64600d1579176195c"
+nodeunit@0.11.2:
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/nodeunit/-/nodeunit-0.11.2.tgz#f45a9c8542b8be83d1936b2c967229ba50b5424a"
   dependencies:
     ejs "^2.5.2"
     tap "^10.0.2"
