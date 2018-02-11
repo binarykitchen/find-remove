@@ -31,7 +31,7 @@
     "node": ">=4.1.0"
   },
   "scripts": {
-    "test": "nodeunit tests/basics.js"
+    "test": "nodeunit tests/basics-async.js"
   },
   "repository": {
     "type": "git",
