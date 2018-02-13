@@ -18,7 +18,7 @@ function promisify (fn) {
 }
 function promisifyWithOutErr (fn) {
 	return (...args) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fn(...args, (...args2) => {
         return resolve(...args2);
       });
