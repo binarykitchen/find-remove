@@ -7,7 +7,7 @@ var testCase     = require('nodeunit').testCase,
     rimraf       = require('rimraf'),
     findRemoveAsync
 
-var rootDirectory = path.join(require('os').tmpDir(), 'find-remove')
+var rootDirectory = path.join(require('os').tmpdir(), 'find-remove')
 
 function generateRandomFilename(ext) {
     var filename = randomstring.generate(24)
