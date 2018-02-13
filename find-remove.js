@@ -7,8 +7,31 @@ var fs      = require('fs'),
     now,
     testRun
 
-function isOlder(path, ageSeconds) {
-    var stats          = fs.statSync(path),
+function promisify (fn) {
+	return (...args) => {
+    return new Promise((resolve, reject) => {
+      fn(...args, (err, ...args2) => {
+        return err ? reject(err) : resolve(...args2)
+      });
+    });
+  };
+}
+function promisifyWithOutErr (fn) {
+	return (...args) => {
+    return new Promise((resolve, reject) => {
+      fn(...args, (...args2) => {
+        return resolve(...args2);
+      });
+    });
+  };
+}
+const statAsync = promisify(fs.stat);
+const existsAsync = promisifyWithOutErr(fs.exists);
+const readdirAsync = promisify(fs.readdir);
+const unlinkAsync = promisify(fs.unlink);
+
+async function isOlder(path, ageSeconds) {
+    var stats          = await statAsync(path),
         mtime          = stats.mtime.getTime(),
         expirationTime = (mtime + (ageSeconds * 1000))
 
@@ -47,7 +70,7 @@ function getAgeSeconds(options) {
     return (options && options.age && options.age.seconds) ? options.age.seconds : null
 }
 
-function doDeleteDirectory(currentDir, options, currentLevel) {
+async function doDeleteDirectory(currentDir, options, currentLevel) {
 
     var doDelete = false
     var dir      = options && options.dir
@@ -71,14 +94,14 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
         }
 
         if (ageSeconds && doDelete) {
-            doDelete = isOlder(currentDir, ageSeconds)
+            doDelete = await isOlder(currentDir, ageSeconds)
         }
     }
 
     return doDelete
 }
 
-function doDeleteFile(currentFile, options) {
+async function doDeleteFile(currentFile, options) {
     // by default it deletes nothing
     var doDelete = false
 
@@ -132,7 +155,7 @@ function doDeleteFile(currentFile, options) {
         var ageSeconds = getAgeSeconds(options)
 
         if (ageSeconds)
-            doDelete = isOlder(currentFile, ageSeconds)
+            doDelete = await isOlder(currentFile, ageSeconds)
     }
 
     return doDelete
@@ -156,11 +179,11 @@ function isTestRun(options) {
  * @return {Object} json object of files and/or directories that were found and successfully removed.
  * @api public
  */
-var findRemoveSync = module.exports = function(currentDir, options, currentLevel) {
+var findRemoveAsync = module.exports = async function(currentDir, options, currentLevel) {
 
     var removed = {}
 
-    if (!isOverTheLimit(options) && fs.existsSync(currentDir)) {
+    if (!isOverTheLimit(options) && await existsAsync(currentDir)) {
 
         var maxLevel = getMaxLevel(options),
             deleteDirectory = false
@@ -181,19 +204,19 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
             // check directories before deleting files inside.
             // this to maintain the original creation time,
             // because linux modifies creation date of folders when files within have been deleted.
-            deleteDirectory = doDeleteDirectory(currentDir, options, currentLevel)
+            deleteDirectory = await doDeleteDirectory(currentDir, options, currentLevel)
         }
 
         if (maxLevel === -1 || currentLevel < maxLevel) {
-            var filesInDir = fs.readdirSync(currentDir)
+            var filesInDir = await readdirAsync(currentDir)
 
-            filesInDir.forEach(function(file) {
+            for (const file of filesInDir) {
 
                 var currentFile = path.join(currentDir, file)
 
-                if (fs.statSync(currentFile).isDirectory()) {
+                if ((await statAsync(currentFile)).isDirectory()) {
                     // the recursive call
-                    var result = findRemoveSync(currentFile, options, currentLevel)
+                    var result = await findRemoveAsync(currentFile, options, currentLevel)
 
                     // merge results
                     removed = merge(removed, result)
@@ -202,9 +225,9 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
 
                 } else {
 
-                    if (doDeleteFile(currentFile, options)) {
+                    if (await doDeleteFile(currentFile, options)) {
                         if (!testRun)
-                            fs.unlinkSync(currentFile)
+                            await unlinkAsync(currentFile)
 
                         removed[currentFile] = true
                         if (hasTotalRemoved(options))
@@ -212,9 +235,8 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
 
                     }
                 }
-            })
+            }
         }
-
         if (deleteDirectory) {
             try {
                 if (!testRun)
