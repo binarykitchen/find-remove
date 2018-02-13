@@ -28,7 +28,7 @@
     "async": "2.6.0"
   },
   "engines": {
-    "node": ">=4.1.0"
+    "node": ">=8.0.0"
   },
   "scripts": {
     "test": "nodeunit tests/basics.js"
