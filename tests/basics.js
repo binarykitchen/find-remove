@@ -5,9 +5,10 @@ var testCase     = require('nodeunit').testCase,
     fs           = require('fs'),
     async        = require('async'),
     rimraf       = require('rimraf'),
+    os           = require('os'),
     findRemoveSync
 
-var rootDirectory = path.join(require('os').tmpDir(), 'find-remove')
+var rootDirectory = path.join(os.tmpdir(), 'find-remove')
 
 function generateRandomFilename(ext) {
     var filename = randomstring.generate(24)
@@ -638,22 +639,6 @@ module.exports = testCase({
             t.done()
         },
 
-        'findRemoveSync(files older than .0005 sec)': function(t) {
-            var result = findRemoveSync(rootDirectory, {files: "*.*", age: {seconds: 0.0005}})
-
-            t.strictEqual(Object.keys(result).length, 11, 'findRemoveSync(files older than .0005 sec) returned 11 entries.')
-
-            t.done()
-        },
-
-        'findRemoveSync(files and dirs older than .0005 sec)': function(t) {
-            var result = findRemoveSync(rootDirectory, {files: "*.*", dir: "*", age: {seconds: 0.0005}})
-
-            t.strictEqual(Object.keys(result).length, 19, 'findRemoveSync(files older than .0005 sec) returned 19 entries.')
-
-            t.done()
-        },
-
         'findRemoveSync(files older than 2 sec with wait)': function(t) {
             setTimeout(function() {
                 var result = findRemoveSync(rootDirectory, {files: "*.*", age: {seconds: 2}})
@@ -714,18 +699,18 @@ module.exports = testCase({
             destroyFakeDirectoryTree(cb)
         },
 
-        'findRemoveSync(files older than .0005 sec with limit of 2)': function(t) {
-            var result = findRemoveSync(rootDirectory, {files: "*.*", age: {seconds: 0.0005}, limit: 2})
+        'findRemoveSync(files older with limit of 2)': function(t) {
+            var result = findRemoveSync(rootDirectory, {files: "*.*", limit: 2})
 
-            t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(files older than .0005 sec with limit of 2) returned 2 entries (out of 11).')
+            t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(files with limit of 2) returned 2 entries (out of 11).')
 
             t.done()
         },
 
-        'findRemoveSync(files and dirs older than .0005 sec with limit of 5)': function(t) {
-            var result = findRemoveSync(rootDirectory, {files: "*.*", dir: "*", age: {seconds: 0.0005}, limit: 5})
+        'findRemoveSync(files and dirs with limit of 5)': function(t) {
+            var result = findRemoveSync(rootDirectory, {files: "*.*", dir: "*", limit: 5})
 
-            t.strictEqual(Object.keys(result).length, 5, 'findRemoveSync(files and dirs older than .0005 sec with limit of 5) returned 5 entries (out of 19).')
+            t.strictEqual(Object.keys(result).length, 5, 'findRemoveSync(files and dirs with limit of 5) returned 5 entries (out of 19).')
 
             t.done()
         }

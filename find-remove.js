@@ -190,8 +190,19 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
             filesInDir.forEach(function(file) {
 
                 var currentFile = path.join(currentDir, file)
+                var skip = false
+                var stat
 
-                if (fs.statSync(currentFile).isDirectory()) {
+                try {
+                  stat = fs.statSync(currentFile)
+                } catch (exc) {
+                  // ignore
+                  skip = true
+                }
+
+                if (skip) {
+                  // ignore, do nothing
+                } else if (stat.isDirectory()) {
                     // the recursive call
                     var result = findRemoveSync(currentFile, options, currentLevel)
 
@@ -203,13 +214,24 @@ var findRemoveSync = module.exports = function(currentDir, options, currentLevel
                 } else {
 
                     if (doDeleteFile(currentFile, options)) {
-                        if (!testRun)
+                        var unlinked
+
+                        if (!testRun) {
+                          try {
                             fs.unlinkSync(currentFile)
+                            unlinked = true
+                          } catch (exc) {
+                            // ignore
+                          }
+                        } else {
+                          unlinked = true
+                        }
 
-                        removed[currentFile] = true
-                        if (hasTotalRemoved(options))
-                            options.totalRemoved ++
-
+                        if (unlinked) {
+                          removed[currentFile] = true
+                          if (hasTotalRemoved(options))
+                              options.totalRemoved ++
+                        }
                     }
                 }
             })

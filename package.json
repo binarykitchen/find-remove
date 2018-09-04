@@ -1,6 +1,6 @@
 {
   "name": "find-remove",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "recursively finds files and/or directories by filter options from a start directory onwards and deletes these according to plenty of options you can configure. useful if you want to clean up stuff within a directory in your node.js app.",
   "main": "find-remove.js",
   "author": "Michael Heuberger <michael.heuberger@binarykitchen.com>",
@@ -22,10 +22,10 @@
     "rimraf": "2.6.2"
   },
   "devDependencies": {
-    "nodeunit": "0.11.2",
+    "nodeunit": "0.11.3",
     "randomstring": "1.1.5",
     "mkdirp": "0.5.1",
-    "async": "2.6.0"
+    "async": "2.6.1"
   },
   "engines": {
     "node": ">=4.1.0"
