@@ -570,10 +570,13 @@ module.exports = testCase({
             findRemoveSync(rootDirectory, {dir: ['directory1_1', 'directory1_2']})
 
             var exists1_1 = fs.existsSync(directory1_1)
-            t.equal(exists1_1, false, 'findRemoveSync(remove single dir) removed directory1_1')
+            t.equal(exists1_1, false, 'findRemoveSync(two dirs) removed directory1_1')
 
             var exists1_2 = fs.existsSync(directory1_2)
-            t.equal(exists1_2, false, 'findRemoveSync(remove single dir) removed directory1_2')
+            t.equal(exists1_2, false, 'findRemoveSync(two dirs) removed directory1_2')
+
+            var exists1_3 = fs.existsSync(directory1_3)
+            t.equal(exists1_3, true, 'findRemoveSync(two dirs) did not remove directory1_3')
 
             t.done()
         },

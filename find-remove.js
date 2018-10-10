@@ -57,7 +57,7 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
         var basename     = path.basename(currentDir)
 
         if (util.isArray(dir)) {
-            doDelete = (dir.indexOf("*") !== 1) || (dir.indexOf(basename) !== -1)
+            doDelete = (dir.indexOf("*") !== -1) || (dir.indexOf(basename) !== -1)
         } else if (basename === dir || dir === "*") {
             doDelete = true
         }
