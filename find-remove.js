@@ -98,7 +98,9 @@ function doDeleteFile(currentFile, options) {
             if (files === '*.*') {
                 doDelete = true
             } else {
-                doDelete = (basename === files)
+                if (basename.match(files.replace('*', '.*'))) {
+                    doDelete = true
+                }
             }
         }
     }
