@@ -58,8 +58,14 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
 
         if (util.isArray(dir)) {
             doDelete = (dir.indexOf("*") !== -1) || (dir.indexOf(basename) !== -1)
-        } else if (basename === dir || dir === "*") {
-            doDelete = true
+        } else {
+            if (dir === '*') {
+                doDelete = true
+            } else {
+                if (basename.match(dir.replace('*', '.*'))) {
+                    doDelete = true
+                }
+            }
         }
 
         if (doDelete && hasLimit(options)) {
