@@ -1,4 +1,4 @@
-# find-remove v1.0 (breaking!)
+# find-remove
 
 [![Build Status](https://travis-ci.org/binarykitchen/find-remove.png?branch=master)](https://travis-ci.org/binarykitchen/find-remove)
 
@@ -15,7 +15,7 @@ to install find-remove, use [npm](http://github.com/isaacs/npm):
 then in your node.js app, get reference to the function like that:
 
 ```javascript
-var findRemoveSync = require('find-remove')
+const findRemoveSync = require('find-remove')
 ```
 
 ## quick examples
@@ -23,7 +23,7 @@ var findRemoveSync = require('find-remove')
 ### 1. delete all *.bak or *.log files within the /temp/ directory
 
 ```javascript
-var result = findRemoveSync('/temp', {extensions: ['.bak', '.log']})
+const result = findRemoveSync('/temp', {extensions: ['.bak', '.log']})
 ```
 
 the return value `result` is a json object with successfully deleted files. if you output `result` to the console, you will get something like this:
@@ -105,8 +105,8 @@ __arguments__
     * `ignore` - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
     * `age.seconds` - can be any float number. findRemoveSync then compares it with the file stats and deletes those with modification times older than `age.seconds`
     * `limit` - can be any integer number. Will limit the number of <b>files</b> to be deleted at single operation to be `limit`
-    * `prefix` - can be any string. Will delete any files that start with `prefix`. 
-    * `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees. 
+    * `prefix` - can be any string. Will delete any files that start with `prefix`.
+    * `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
     * `test` - advanced: set to true for a test run, meaning it does not delete anything but returns a JSON of files/directories it would have deleted. useful for testing.
 
 as a precaution, nothing happens when there are no options.

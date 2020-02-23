@@ -9,7 +9,7 @@ const async = require('async')
 const rimraf = require('rimraf')
 const os = require('os')
 
-var findRemoveSync
+const findRemoveSync = require('../src/index.js')
 
 const rootDirectory = path.join(os.tmpdir(), 'find-remove')
 
@@ -134,8 +134,6 @@ function destroyFakeDirectoryTree (cb) {
 module.exports = testCase({
   'TC 1: tests without real files': testCase({
     'loading findRemoveSync function (require)': function (t) {
-      findRemoveSync = require('../index.js')
-
       t.ok(findRemoveSync, 'findRemoveSync is loaded.')
       t.done()
     },
