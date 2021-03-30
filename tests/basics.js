@@ -13,8 +13,8 @@ const findRemoveSync = require('../src/index.js')
 
 const rootDirectory = path.join(os.tmpdir(), 'find-remove')
 
-function generateRandomFilename (ext) {
-  var filename = randomstring.generate(24)
+function generateRandomFilename(ext) {
+  let filename = randomstring.generate(24)
 
   if (ext) {
     filename += '.' + ext
@@ -82,7 +82,7 @@ const fixFile1_2_1_4 = path.join(directory1_2_1, fixFilename1_2_1_4)
 const fixFilename1_2_1_5 = 'something.png'
 const fixFile1_2_1_5 = path.join(directory1_2_1, fixFilename1_2_1_5)
 
-function makeFile (file, cb) {
+function makeFile(file, cb) {
   fs.writeFile(file, '', function (err) {
     if (err) {
       cb(err)
@@ -92,42 +92,83 @@ function makeFile (file, cb) {
   })
 }
 
-function createFakeDirectoryTree (cb) {
-  async.series([
-    function (cb) { mkdirp(directory1, cb) },
-    function (cb) { mkdirp(directory2, cb) },
-    function (cb) { mkdirp(directory3, cb) },
+function createFakeDirectoryTree(cb) {
+  async.series(
+    [
+      function (cb) {
+        mkdirp(directory1, cb)
+      },
+      function (cb) {
+        mkdirp(directory2, cb)
+      },
+      function (cb) {
+        mkdirp(directory3, cb)
+      },
 
-    function (cb) { mkdirp(directory1_1, cb) },
-    function (cb) { mkdirp(directory1_2, cb) },
-    function (cb) { mkdirp(directory1_3, cb) },
+      function (cb) {
+        mkdirp(directory1_1, cb)
+      },
+      function (cb) {
+        mkdirp(directory1_2, cb)
+      },
+      function (cb) {
+        mkdirp(directory1_3, cb)
+      },
 
-    function (cb) { mkdirp(directory1_2_1, cb) },
-    function (cb) { mkdirp(directory1_2_2, cb) },
+      function (cb) {
+        mkdirp(directory1_2_1, cb)
+      },
+      function (cb) {
+        mkdirp(directory1_2_2, cb)
+      },
 
-    function (cb) { makeFile(randomFile1, cb) },
-    function (cb) { makeFile(randomFile2, cb) },
-    function (cb) { makeFile(randomFile3, cb) },
-    function (cb) { makeFile(randomFile4, cb) },
+      function (cb) {
+        makeFile(randomFile1, cb)
+      },
+      function (cb) {
+        makeFile(randomFile2, cb)
+      },
+      function (cb) {
+        makeFile(randomFile3, cb)
+      },
+      function (cb) {
+        makeFile(randomFile4, cb)
+      },
 
-    function (cb) { makeFile(randomFile2_1, cb) },
-    function (cb) { makeFile(randomFile2_2, cb) },
+      function (cb) {
+        makeFile(randomFile2_1, cb)
+      },
+      function (cb) {
+        makeFile(randomFile2_2, cb)
+      },
 
-    function (cb) { makeFile(randomFile1_2_1_1, cb) },
-    function (cb) { makeFile(randomFile1_2_1_2, cb) },
-    function (cb) { makeFile(randomFile1_2_1_3, cb) },
-    function (cb) { makeFile(fixFile1_2_1_4, cb) },
-    function (cb) { makeFile(fixFile1_2_1_5, cb) }
-  ], function (err) {
-    if (err) {
-      console.error(err)
-    } else {
-      cb()
+      function (cb) {
+        makeFile(randomFile1_2_1_1, cb)
+      },
+      function (cb) {
+        makeFile(randomFile1_2_1_2, cb)
+      },
+      function (cb) {
+        makeFile(randomFile1_2_1_3, cb)
+      },
+      function (cb) {
+        makeFile(fixFile1_2_1_4, cb)
+      },
+      function (cb) {
+        makeFile(fixFile1_2_1_5, cb)
+      }
+    ],
+    function (err) {
+      if (err) {
+        console.error(err)
+      } else {
+        cb()
+      }
     }
-  })
+  )
 }
 
-function destroyFakeDirectoryTree (cb) {
+function destroyFakeDirectoryTree(cb) {
   rimraf(rootDirectory, cb)
 }
 
@@ -139,10 +180,9 @@ module.exports = testCase({
     },
 
     'removing non-existing directory': function (t) {
-      var result
       const dir = generateRandomFilename()
+      const result = findRemoveSync(dir)
 
-      result = findRemoveSync(dir)
       t.strictEqual(Object.keys(result).length, 0, 'returned empty')
 
       t.done()
@@ -253,7 +293,10 @@ module.exports = testCase({
     },
 
     'findRemoveSync(one directory and all files)': function (t) {
-      const result = findRemoveSync(rootDirectory, { dir: 'directory1_2_1', files: '*.*' })
+      const result = findRemoveSync(rootDirectory, {
+        dir: 'directory1_2_1',
+        files: '*.*'
+      })
 
       const exists1_2_1 = fs.existsSync(directory1_2_1)
       t.equal(exists1_2_1, false, 'did remove directory1_2_1')
@@ -291,20 +334,52 @@ module.exports = testCase({
       const exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2)
       const exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3)
 
-      t.equal(exists1, false, 'findRemoveSync(all bak files from root) removed randomFile1 fine')
-      t.equal(exists2_1, false, 'findRemoveSync(all bak files from root) removed exists2_1 fine')
-      t.equal(exists1_2_1_2, false, 'findRemoveSync(all bak files from root) removed exists1_2_1_2 fine')
-      t.equal(exists1_2_1_3, false, 'findRemoveSync(all bak files from root) removed exists1_2_1_3 fine')
+      t.equal(
+        exists1,
+        false,
+        'findRemoveSync(all bak files from root) removed randomFile1 fine'
+      )
+      t.equal(
+        exists2_1,
+        false,
+        'findRemoveSync(all bak files from root) removed exists2_1 fine'
+      )
+      t.equal(
+        exists1_2_1_2,
+        false,
+        'findRemoveSync(all bak files from root) removed exists1_2_1_2 fine'
+      )
+      t.equal(
+        exists1_2_1_3,
+        false,
+        'findRemoveSync(all bak files from root) removed exists1_2_1_3 fine'
+      )
 
       const exists3 = fs.existsSync(randomFile3)
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
       const exists0 = fs.existsSync(rootDirectory)
       const exists1_2_1 = fs.existsSync(directory1_2_1)
 
-      t.equal(exists3, true, 'findRemoveSync(all bak files from root) did not remove log file exists3')
-      t.equal(exists1_2_1_1, true, 'findRemoveSync(all bak files from root) did not remove log file exists1_2_1_1')
-      t.equal(exists0, true, 'findRemoveSync(all bak files from root) did not remove root directory')
-      t.equal(exists1_2_1, true, 'findRemoveSync(all bak files from root) did not remove directory directory1_2_1')
+      t.equal(
+        exists3,
+        true,
+        'findRemoveSync(all bak files from root) did not remove log file exists3'
+      )
+      t.equal(
+        exists1_2_1_1,
+        true,
+        'findRemoveSync(all bak files from root) did not remove log file exists1_2_1_1'
+      )
+      t.equal(
+        exists0,
+        true,
+        'findRemoveSync(all bak files from root) did not remove root directory'
+      )
+      t.equal(
+        exists1_2_1,
+        true,
+        'findRemoveSync(all bak files from root) did not remove directory directory1_2_1'
+      )
 
       t.done()
     },
@@ -313,13 +388,25 @@ module.exports = testCase({
       findRemoveSync(directory1_2_1, { extensions: '.log' })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(all log files from directory1_2_1) removed randomFile1_2_1_1 fine')
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(all log files from directory1_2_1) removed randomFile1_2_1_1 fine'
+      )
 
       const exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2)
-      t.equal(exists1_2_1_2, true, 'findRemoveSync(all log files from directory1_2_1) did not remove file randomFile1_2_1_2')
+      t.equal(
+        exists1_2_1_2,
+        true,
+        'findRemoveSync(all log files from directory1_2_1) did not remove file randomFile1_2_1_2'
+      )
 
       const exists1_2_1 = fs.existsSync(directory1_2_1)
-      t.equal(exists1_2_1, true, 'findRemoveSync(all log files from directory1_2_1) did not remove directory directory1_2_1')
+      t.equal(
+        exists1_2_1,
+        true,
+        'findRemoveSync(all log files from directory1_2_1) did not remove directory directory1_2_1'
+      )
 
       t.done()
     },
@@ -336,17 +423,49 @@ module.exports = testCase({
       const exists3 = fs.existsSync(randomFile3)
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
 
-      t.equal(exists1, false, 'findRemoveSync(all bak and log files from root) removed randomFile1 fine')
-      t.equal(exists2_1, false, 'findRemoveSync(all bak and log files from root) removed exists2_1 fine')
-      t.equal(exists1_2_1_2, false, 'findRemoveSync(all bak and log files from root) removed exists1_2_1_2 fine')
-      t.equal(exists1_2_1_3, false, 'findRemoveSync(all bak and log files from root) removed exists1_2_1_3 fine')
+      t.equal(
+        exists1,
+        false,
+        'findRemoveSync(all bak and log files from root) removed randomFile1 fine'
+      )
+      t.equal(
+        exists2_1,
+        false,
+        'findRemoveSync(all bak and log files from root) removed exists2_1 fine'
+      )
+      t.equal(
+        exists1_2_1_2,
+        false,
+        'findRemoveSync(all bak and log files from root) removed exists1_2_1_2 fine'
+      )
+      t.equal(
+        exists1_2_1_3,
+        false,
+        'findRemoveSync(all bak and log files from root) removed exists1_2_1_3 fine'
+      )
 
-      t.equal(exists2, false, 'findRemoveSync(all bak and log files from root) removed exists2 fine')
-      t.equal(exists3, false, 'findRemoveSync(all bak and log files from root) removed exists3 fine')
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(all bak and log files from root) removed exists1_2_1_1 fine')
+      t.equal(
+        exists2,
+        false,
+        'findRemoveSync(all bak and log files from root) removed exists2 fine'
+      )
+      t.equal(
+        exists3,
+        false,
+        'findRemoveSync(all bak and log files from root) removed exists3 fine'
+      )
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(all bak and log files from root) removed exists1_2_1_1 fine'
+      )
 
       const exists1_1 = fs.existsSync(directory1_1)
-      t.equal(exists1_1, true, 'findRemoveSync(all bak and log files from root) did not remove directory1_1')
+      t.equal(
+        exists1_1,
+        true,
+        'findRemoveSync(all bak and log files from root) did not remove directory1_1'
+      )
 
       t.done()
     },
@@ -355,13 +474,25 @@ module.exports = testCase({
       findRemoveSync(directory1_2, { files: randomFilename1_2_1_1 })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) removed randomFile1_2_1_1 fine')
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) removed randomFile1_2_1_1 fine'
+      )
 
       const exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2)
-      t.equal(exists1_2_1_2, true, 'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) did not remove randomFile1_2_1_2')
+      t.equal(
+        exists1_2_1_2,
+        true,
+        'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) did not remove randomFile1_2_1_2'
+      )
 
       const exists1_2 = fs.existsSync(directory1_2)
-      t.equal(exists1_2, true, 'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) did not remove directory1_2')
+      t.equal(
+        exists1_2,
+        true,
+        'findRemoveSync(filename randomFilename1_2_1_1 from directory1_2) did not remove directory1_2'
+      )
 
       t.done()
     },
@@ -370,16 +501,32 @@ module.exports = testCase({
       findRemoveSync(rootDirectory, { files: [randomFilename2, randomFilename1_2_1_3] })
 
       const exists2 = fs.existsSync(randomFile2)
-      t.equal(exists2, false, 'findRemoveSync(two files from root) removed randomFile2 fine')
+      t.equal(
+        exists2,
+        false,
+        'findRemoveSync(two files from root) removed randomFile2 fine'
+      )
 
       const exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3)
-      t.equal(exists1_2_1_3, false, 'findRemoveSync(two files from root) removed randomFile1_2_1_3 fine')
+      t.equal(
+        exists1_2_1_3,
+        false,
+        'findRemoveSync(two files from root) removed randomFile1_2_1_3 fine'
+      )
 
       const exists1 = fs.existsSync(randomFile1)
-      t.equal(exists1, true, 'findRemoveSync(two files from root) did not remove randomFile1')
+      t.equal(
+        exists1,
+        true,
+        'findRemoveSync(two files from root) did not remove randomFile1'
+      )
 
       const exists0 = fs.existsSync(rootDirectory)
-      t.equal(exists0, true, 'findRemoveSync(two files from root) did not remove root directory')
+      t.equal(
+        exists0,
+        true,
+        'findRemoveSync(two files from root) did not remove root directory'
+      )
 
       t.done()
     },
@@ -388,148 +535,333 @@ module.exports = testCase({
       findRemoveSync(directory1_2_1, { files: '*.*' })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(files set to *.*) removed randomFile1_2_1_1 fine')
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(files set to *.*) removed randomFile1_2_1_1 fine'
+      )
 
       const exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2)
-      t.equal(exists1_2_1_2, false, 'findRemoveSync(files set to *.*) removed randomFile1_2_1_2 fine')
+      t.equal(
+        exists1_2_1_2,
+        false,
+        'findRemoveSync(files set to *.*) removed randomFile1_2_1_2 fine'
+      )
 
       const exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3)
-      t.equal(exists1_2_1_3, false, 'findRemoveSync(files set to *.*) removed randomFile1_2_1_3 fine')
+      t.equal(
+        exists1_2_1_3,
+        false,
+        'findRemoveSync(files set to *.*) removed randomFile1_2_1_3 fine'
+      )
 
       const exists1_2_1 = fs.existsSync(directory1_2_1)
-      t.equal(exists1_2_1, true, 'findRemoveSync(files set to *.* did not remove directory1_2_1')
+      t.equal(
+        exists1_2_1,
+        true,
+        'findRemoveSync(files set to *.* did not remove directory1_2_1'
+      )
 
       t.done()
     },
 
     'findRemoveSync(with mixed ext and file params)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: randomFilename1, extensions: ['.log'] })
+      const result = findRemoveSync(rootDirectory, {
+        files: randomFilename1,
+        extensions: ['.log']
+      })
 
       const exists1 = fs.existsSync(randomFile1)
       const exists2 = fs.existsSync(randomFile2)
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1, false, 'findRemoveSync(with mixed ext and file params) removed randomFile1 fine')
-      t.equal(exists2, false, 'findRemoveSync(with mixed ext and file params) removed randomFile2 fine')
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(with mixed ext and file params) removed randomFile1_2_1_1 fine')
+      t.equal(
+        exists1,
+        false,
+        'findRemoveSync(with mixed ext and file params) removed randomFile1 fine'
+      )
+      t.equal(
+        exists2,
+        false,
+        'findRemoveSync(with mixed ext and file params) removed randomFile2 fine'
+      )
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(with mixed ext and file params) removed randomFile1_2_1_1 fine'
+      )
 
       const exists1_2_1 = fs.existsSync(directory1_2_1)
       t.equal(exists1_2_1, true, 'did not remove directory1_2_1')
 
-      t.strictEqual(typeof result[randomFile1], 'boolean', 'randomFile1 in result is boolean')
-      t.strictEqual(typeof result[randomFile1_2_1_2], 'undefined', 'randomFile1_2_1_2 is NOT in result')
+      t.strictEqual(
+        typeof result[randomFile1],
+        'boolean',
+        'randomFile1 in result is boolean'
+      )
+      t.strictEqual(
+        typeof result[randomFile1_2_1_2],
+        'undefined',
+        'randomFile1_2_1_2 is NOT in result'
+      )
 
       t.done()
     },
 
     'findRemoveSync(with ignore param)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', ignore: fixFilename1_2_1_4 })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        ignore: fixFilename1_2_1_4
+      })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(with ignore) did remove file randomFile1_2_1_1')
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(with ignore) did remove file randomFile1_2_1_1'
+      )
 
       const exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4)
       t.equal(exists1_2_1_4, true, 'file fixFile1_2_1_4 not removed')
 
-      t.strictEqual(typeof result[randomFile1_2_1_1], 'boolean', 'randomFile1_2_1_1 in result is boolean')
-      t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result')
+      t.strictEqual(
+        typeof result[randomFile1_2_1_1],
+        'boolean',
+        'randomFile1_2_1_1 in result is boolean'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_4],
+        'undefined',
+        'fixFile1_2_1_4 is NOT in result'
+      )
 
       t.done()
     },
 
     'findRemoveSync(with ignore and jpg extension params)': function (t) {
-      const result = findRemoveSync(rootDirectory, { ignore: fixFilename1_2_1_4, extensions: '.jpg' })
+      const result = findRemoveSync(rootDirectory, {
+        ignore: fixFilename1_2_1_4,
+        extensions: '.jpg'
+      })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
       const exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4)
-      t.equal(exists1_2_1_1, true, 'findRemoveSync(with ignore + jpg extension) did not remove file randomFile1_2_1_1')
-      t.equal(exists1_2_1_4, true, 'findRemoveSync(with ignore + jpg extension) did not remove file fixFile1_2_1_4')
-      t.strictEqual(typeof result[randomFile1_2_1_1], 'undefined', 'randomFile1_2_1_1 is NOT in result')
-      t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result')
+      t.equal(
+        exists1_2_1_1,
+        true,
+        'findRemoveSync(with ignore + jpg extension) did not remove file randomFile1_2_1_1'
+      )
+      t.equal(
+        exists1_2_1_4,
+        true,
+        'findRemoveSync(with ignore + jpg extension) did not remove file fixFile1_2_1_4'
+      )
+      t.strictEqual(
+        typeof result[randomFile1_2_1_1],
+        'undefined',
+        'randomFile1_2_1_1 is NOT in result'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_4],
+        'undefined',
+        'fixFile1_2_1_4 is NOT in result'
+      )
 
       t.done()
     },
 
     'findRemoveSync(with multiple ignore)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', ignore: [fixFilename1_2_1_4, fixFilename1_2_1_5] })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        ignore: [fixFilename1_2_1_4, fixFilename1_2_1_5]
+      })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(with multiple ignore) did remove file randomFile1_2_1_1')
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(with multiple ignore) did remove file randomFile1_2_1_1'
+      )
 
       const exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4)
-      t.equal(exists1_2_1_4, true, 'findRemoveSync(with multiple ignore) did not remove file fixFile1_2_1_4')
+      t.equal(
+        exists1_2_1_4,
+        true,
+        'findRemoveSync(with multiple ignore) did not remove file fixFile1_2_1_4'
+      )
 
       const exists1_2_1_5 = fs.existsSync(fixFile1_2_1_5)
-      t.equal(exists1_2_1_5, true, 'findRemoveSync(with multiple ignore) did not remove file fixFile1_2_1_5')
+      t.equal(
+        exists1_2_1_5,
+        true,
+        'findRemoveSync(with multiple ignore) did not remove file fixFile1_2_1_5'
+      )
 
-      t.strictEqual(typeof result[randomFile1_2_1_1], 'boolean', 'randomFile1_2_1_1 is in result')
-      t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result')
-      t.strictEqual(typeof result[fixFile1_2_1_5], 'undefined', 'fixFile1_2_1_5 is NOT in result')
+      t.strictEqual(
+        typeof result[randomFile1_2_1_1],
+        'boolean',
+        'randomFile1_2_1_1 is in result'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_4],
+        'undefined',
+        'fixFile1_2_1_4 is NOT in result'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_5],
+        'undefined',
+        'fixFile1_2_1_5 is NOT in result'
+      )
 
       t.done()
     },
 
     'findRemoveSync(with ignore and bak extension params)': function (t) {
-      const result = findRemoveSync(rootDirectory, { ignore: fixFilename1_2_1_4, extensions: '.bak' })
+      const result = findRemoveSync(rootDirectory, {
+        ignore: fixFilename1_2_1_4,
+        extensions: '.bak'
+      })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, true, 'findRemoveSync(with ignore + bak extension) did not remove file randomFile1_2_1_1')
+      t.equal(
+        exists1_2_1_1,
+        true,
+        'findRemoveSync(with ignore + bak extension) did not remove file randomFile1_2_1_1'
+      )
 
       const exists1_2_1_2 = fs.existsSync(randomFile1_2_1_2)
-      t.equal(exists1_2_1_2, false, 'findRemoveSync(with ignore + bak extension) did remove file randomFile1_2_1_2')
+      t.equal(
+        exists1_2_1_2,
+        false,
+        'findRemoveSync(with ignore + bak extension) did remove file randomFile1_2_1_2'
+      )
 
       const exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4)
-      t.equal(exists1_2_1_4, true, 'findRemoveSync(with ignore + bak extension) did not remove file fixFile1_2_1_4')
+      t.equal(
+        exists1_2_1_4,
+        true,
+        'findRemoveSync(with ignore + bak extension) did not remove file fixFile1_2_1_4'
+      )
 
-      t.strictEqual(typeof result[randomFile1_2_1_1], 'undefined', 'randomFile1_2_1_1 is NOT in result')
-      t.strictEqual(typeof result[randomFile1_2_1_2], 'boolean', 'randomFile1_2_1_2 is in result')
-      t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result')
+      t.strictEqual(
+        typeof result[randomFile1_2_1_1],
+        'undefined',
+        'randomFile1_2_1_1 is NOT in result'
+      )
+      t.strictEqual(
+        typeof result[randomFile1_2_1_2],
+        'boolean',
+        'randomFile1_2_1_2 is in result'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_4],
+        'undefined',
+        'fixFile1_2_1_4 is NOT in result'
+      )
 
       t.done()
     },
 
     'findRemoveSync(two files and check others)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: [randomFilename1_2_1_1, randomFilename1_2_1_3] })
+      const result = findRemoveSync(rootDirectory, {
+        files: [randomFilename1_2_1_1, randomFilename1_2_1_3]
+      })
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, false, 'findRemoveSync(two files and check others) removed randomFile1_2_1_1 fine')
+      t.equal(
+        exists1_2_1_1,
+        false,
+        'findRemoveSync(two files and check others) removed randomFile1_2_1_1 fine'
+      )
 
       const exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3)
-      t.equal(exists1_2_1_3, false, 'findRemoveSync(two files and check others) removed randomFile1_2_1_3 fine')
+      t.equal(
+        exists1_2_1_3,
+        false,
+        'findRemoveSync(two files and check others) removed randomFile1_2_1_3 fine'
+      )
 
       const exists1_2_1_4 = fs.existsSync(fixFile1_2_1_4)
-      t.equal(exists1_2_1_4, true, 'findRemoveSync(two files and check others) did not remove fixFile1_2_1_4')
+      t.equal(
+        exists1_2_1_4,
+        true,
+        'findRemoveSync(two files and check others) did not remove fixFile1_2_1_4'
+      )
 
       const exists1_2_1_5 = fs.existsSync(fixFile1_2_1_5)
-      t.equal(exists1_2_1_5, true, 'findRemoveSync(two files and check others) did not remove fixFile1_2_1_5')
+      t.equal(
+        exists1_2_1_5,
+        true,
+        'findRemoveSync(two files and check others) did not remove fixFile1_2_1_5'
+      )
 
-      t.strictEqual(typeof result[randomFile1_2_1_1], 'boolean', 'randomFile1_2_1_1 is in result')
-      t.strictEqual(typeof result[randomFile1_2_1_3], 'boolean', 'randomFile1_2_1_3 is in result')
-      t.strictEqual(typeof result[fixFile1_2_1_4], 'undefined', 'fixFile1_2_1_4 is NOT in result')
-      t.strictEqual(typeof result[fixFile1_2_1_5], 'undefined', 'fixFile1_2_1_5 is NOT in result')
+      t.strictEqual(
+        typeof result[randomFile1_2_1_1],
+        'boolean',
+        'randomFile1_2_1_1 is in result'
+      )
+      t.strictEqual(
+        typeof result[randomFile1_2_1_3],
+        'boolean',
+        'randomFile1_2_1_3 is in result'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_4],
+        'undefined',
+        'fixFile1_2_1_4 is NOT in result'
+      )
+      t.strictEqual(
+        typeof result[fixFile1_2_1_5],
+        'undefined',
+        'fixFile1_2_1_5 is NOT in result'
+      )
 
       t.done()
     },
 
     'findRemoveSync(limit to maxLevel = 0)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', maxLevel: 0 })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        dir: '*',
+        maxLevel: 0
+      })
 
-      t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(limit to maxLevel = 0) returned empty an array.')
+      t.strictEqual(
+        Object.keys(result).length,
+        0,
+        'findRemoveSync(limit to maxLevel = 0) returned empty an array.'
+      )
 
       t.done()
     },
 
     'findRemoveSync(limit to maxLevel = 1)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', maxLevel: 1 })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        dir: '*',
+        maxLevel: 1
+      })
 
-      t.strictEqual(Object.keys(result).length, 7, 'findRemoveSync(limit to maxLevel = 1) returned 7 entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        7,
+        'findRemoveSync(limit to maxLevel = 1) returned 7 entries.'
+      )
 
       t.done()
     },
 
     'findRemoveSync(limit to maxLevel = 2)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', maxLevel: 2 })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        dir: '*',
+        maxLevel: 2
+      })
 
-      t.strictEqual(Object.keys(result).length, 12, 'findRemoveSync(limit to maxLevel = 2) returned 12 entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        12,
+        'findRemoveSync(limit to maxLevel = 2) returned 12 entries.'
+      )
 
       t.done()
     },
@@ -537,7 +869,11 @@ module.exports = testCase({
     'findRemoveSync(limit to maxLevel = 3)': function (t) {
       const result = findRemoveSync(rootDirectory, { files: '*.*', maxLevel: 3 })
 
-      t.strictEqual(Object.keys(result).length, 6, 'findRemoveSync(limit to maxLevel = 3) returned 6 entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        6,
+        'findRemoveSync(limit to maxLevel = 3) returned 6 entries.'
+      )
 
       t.done()
     },
@@ -545,7 +881,11 @@ module.exports = testCase({
     'findRemoveSync(limit to maxLevel = 3 + bak only)': function (t) {
       const result = findRemoveSync(rootDirectory, { maxLevel: 3, extensions: '.bak' })
 
-      t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(limit to maxLevel = 3 + bak only) returned 2 entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        2,
+        'findRemoveSync(limit to maxLevel = 3 + bak only) returned 2 entries.'
+      )
 
       t.done()
     },
@@ -581,30 +921,62 @@ module.exports = testCase({
       findRemoveSync(rootDirectory, { dir: 'CVS' })
 
       const exists1_3 = fs.existsSync(directory1_3)
-      t.equal(exists1_3, false, 'findRemoveSync(directories with the same basename) removed root/directory1/CVS')
+      t.equal(
+        exists1_3,
+        false,
+        'findRemoveSync(directories with the same basename) removed root/directory1/CVS'
+      )
 
       const exists3 = fs.existsSync(directory3)
-      t.equal(exists3, false, 'findRemoveSync(directories with the same basename) removed root/CVS')
+      t.equal(
+        exists3,
+        false,
+        'findRemoveSync(directories with the same basename) removed root/CVS'
+      )
 
       const exists1_1 = fs.existsSync(directory1_1)
-      t.equal(exists1_1, true, 'findRemoveSync(remove single dir) did not remove directory1_1')
+      t.equal(
+        exists1_1,
+        true,
+        'findRemoveSync(remove single dir) did not remove directory1_1'
+      )
 
       const exists1_2 = fs.existsSync(directory1_2)
-      t.equal(exists1_2, true, 'findRemoveSync(remove single dir) did not remove directory1_2')
+      t.equal(
+        exists1_2,
+        true,
+        'findRemoveSync(remove single dir) did not remove directory1_2'
+      )
 
       t.done()
     },
 
     'findRemoveSync(test run)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', test: true })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        dir: '*',
+        test: true
+      })
 
-      t.strictEqual(Object.keys(result).length, 19, 'findRemoveSync(test run) returned 19 entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        19,
+        'findRemoveSync(test run) returned 19 entries.'
+      )
 
       const exists1_2_1_1 = fs.existsSync(randomFile1_2_1_1)
-      t.equal(exists1_2_1_1, true, 'findRemoveSync(test run) did not remove randomFile1_2_1_1')
+      t.equal(
+        exists1_2_1_1,
+        true,
+        'findRemoveSync(test run) did not remove randomFile1_2_1_1'
+      )
 
       const exists1_2_1_3 = fs.existsSync(randomFile1_2_1_3)
-      t.equal(exists1_2_1_3, true, 'findRemoveSync(test run) did not remove randomFile1_2_1_3')
+      t.equal(
+        exists1_2_1_3,
+        true,
+        'findRemoveSync(test run) did not remove randomFile1_2_1_3'
+      )
 
       const exists1_1 = fs.existsSync(directory1_1)
       t.equal(exists1_1, true, 'findRemoveSync(test run) did not remove directory1_1')
@@ -623,26 +995,49 @@ module.exports = testCase({
     },
 
     'findRemoveSync(files and dirs older than 10000000000000000 sec)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', age: { seconds: 10000000000000000 } })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        dir: '*',
+        age: { seconds: 10000000000000000 }
+      })
 
-      t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files older than 10000000000000000 sec) returned zero entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        0,
+        'findRemoveSync(files older than 10000000000000000 sec) returned zero entries.'
+      )
 
       t.done()
     },
 
     'findRemoveSync(files and dirs older than 10 sec)': function (t) {
-      const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', age: { seconds: 10 } })
+      const result = findRemoveSync(rootDirectory, {
+        files: '*.*',
+        dir: '*',
+        age: { seconds: 10 }
+      })
 
-      t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files older than 10 sec) returned zero entries.')
+      t.strictEqual(
+        Object.keys(result).length,
+        0,
+        'findRemoveSync(files older than 10 sec) returned zero entries.'
+      )
 
       t.done()
     },
 
     'findRemoveSync(files older than 2 sec with wait)': function (t) {
       setTimeout(function () {
-        const result = findRemoveSync(rootDirectory, { files: '*.*', age: { seconds: 2 } })
+        const result = findRemoveSync(rootDirectory, {
+          files: '*.*',
+          age: { seconds: 2 }
+        })
 
-        t.strictEqual(Object.keys(result).length, 11, 'findRemoveSync(files older than 2 sec with wait) returned 11 entries.')
+        t.strictEqual(
+          Object.keys(result).length,
+          11,
+          'findRemoveSync(files older than 2 sec with wait) returned 11 entries.'
+        )
 
         t.done()
       }, 2100)
@@ -650,9 +1045,17 @@ module.exports = testCase({
 
     'findRemoveSync(files older than 2 sec with wait + maxLevel = 1)': function (t) {
       setTimeout(function () {
-        const result = findRemoveSync(rootDirectory, { files: '*.*', maxLevel: 1, age: { seconds: 2 } })
+        const result = findRemoveSync(rootDirectory, {
+          files: '*.*',
+          maxLevel: 1,
+          age: { seconds: 2 }
+        })
 
-        t.strictEqual(Object.keys(result).length, 4, 'findRemoveSync(files older than 2 sec with wait + maxLevel = 1) returned 4 entries.')
+        t.strictEqual(
+          Object.keys(result).length,
+          4,
+          'findRemoveSync(files older than 2 sec with wait + maxLevel = 1) returned 4 entries.'
+        )
 
         t.done()
       }, 2100)
@@ -671,9 +1074,16 @@ module.exports = testCase({
     // from https://github.com/binarykitchen/find-remove/issues/7
     'findRemoveSync(issues/7a)': function (t) {
       setTimeout(function () {
-        const result = findRemoveSync(rootDirectory, { age: { seconds: 2 }, extensions: '.csv' })
+        const result = findRemoveSync(rootDirectory, {
+          age: { seconds: 2 },
+          extensions: '.csv'
+        })
 
-        t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(issues/7) deleted 2 files.')
+        t.strictEqual(
+          Object.keys(result).length,
+          2,
+          'findRemoveSync(issues/7) deleted 2 files.'
+        )
 
         t.done()
       }, 3 * 1000)
@@ -701,7 +1111,11 @@ module.exports = testCase({
     'findRemoveSync(files older with limit of 2)': function (t) {
       const result = findRemoveSync(rootDirectory, { files: '*.*', limit: 2 })
 
-      t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(files with limit of 2) returned 2 entries (out of 11).')
+      t.strictEqual(
+        Object.keys(result).length,
+        2,
+        'findRemoveSync(files with limit of 2) returned 2 entries (out of 11).'
+      )
 
       t.done()
     },
@@ -709,7 +1123,11 @@ module.exports = testCase({
     'findRemoveSync(files and dirs with limit of 5)': function (t) {
       const result = findRemoveSync(rootDirectory, { files: '*.*', dir: '*', limit: 5 })
 
-      t.strictEqual(Object.keys(result).length, 5, 'findRemoveSync(files and dirs with limit of 5) returned 5 entries (out of 19).')
+      t.strictEqual(
+        Object.keys(result).length,
+        5,
+        'findRemoveSync(files and dirs with limit of 5) returned 5 entries (out of 19).'
+      )
 
       t.done()
     }
@@ -727,15 +1145,27 @@ module.exports = testCase({
     'findRemoveSync(files with exiting prefix "someth")': function (t) {
       const result = findRemoveSync(rootDirectory, { prefix: 'someth' })
 
-      t.strictEqual(Object.keys(result).length, 2, 'findRemoveSync(files with prefix "someth") returned 2 entries (out of 11).')
+      t.strictEqual(
+        Object.keys(result).length,
+        2,
+        'findRemoveSync(files with prefix "someth") returned 2 entries (out of 11).'
+      )
 
       t.done()
     },
 
-    'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss" - too many chars)': function (t) {
-      const result = findRemoveSync(rootDirectory, { prefix: 'ssssssssssssssssssssssssss' })
+    'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss" - too many chars)': function (
+      t
+    ) {
+      const result = findRemoveSync(rootDirectory, {
+        prefix: 'ssssssssssssssssssssssssss'
+      })
 
-      t.strictEqual(Object.keys(result).length, 0, 'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss"- too many chars) returned 0 entries (out of 11).')
+      t.strictEqual(
+        Object.keys(result).length,
+        0,
+        'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss"- too many chars) returned 0 entries (out of 11).'
+      )
 
       t.done()
     }

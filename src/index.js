@@ -3,51 +3,51 @@ const path = require('path')
 const merge = require('fmerge')
 const rimraf = require('rimraf')
 
-var now
-var testRun
+let now
+let testRun
 
-function isOlder (path, ageSeconds) {
+function isOlder(path, ageSeconds) {
   const stats = fs.statSync(path)
   const mtime = stats.mtime.getTime()
-  const expirationTime = (mtime + (ageSeconds * 1000))
+  const expirationTime = mtime + ageSeconds * 1000
 
   return now > expirationTime
 }
 
-function hasLimit (options) {
+function hasLimit(options) {
   return options && 'limit' in options
 }
 
-function getLimit (options) {
+function getLimit(options) {
   return hasLimit(options) ? options.limit : -1
 }
 
-function hasTotalRemoved (options) {
+function hasTotalRemoved(options) {
   return options && 'totalRemoved' in options
 }
 
-function getTotalRemoved (options) {
+function getTotalRemoved(options) {
   return hasTotalRemoved(options) ? options.totalRemoved : -2
 }
 
-function isOverTheLimit (options) {
+function isOverTheLimit(options) {
   return getTotalRemoved(options) >= getLimit(options)
 }
 
-function hasMaxLevel (options) {
+function hasMaxLevel(options) {
   return options && 'maxLevel' in options
 }
 
-function getMaxLevel (options) {
+function getMaxLevel(options) {
   return hasMaxLevel(options) ? options.maxLevel : -1
 }
 
-function getAgeSeconds (options) {
+function getAgeSeconds(options) {
   return options && options.age && options.age.seconds ? options.age.seconds : null
 }
 
-function doDeleteDirectory (currentDir, options, currentLevel) {
-  var doDelete = false
+function doDeleteDirectory(currentDir, options, currentLevel) {
+  let doDelete = false
   const dir = options && options.dir
 
   if (dir) {
@@ -55,7 +55,7 @@ function doDeleteDirectory (currentDir, options, currentLevel) {
     const basename = path.basename(currentDir)
 
     if (Array.isArray(dir)) {
-      doDelete = (dir.indexOf('*') !== -1) || (dir.indexOf(basename) !== -1)
+      doDelete = dir.indexOf('*') !== -1 || dir.indexOf(basename) !== -1
     } else if (basename === dir || dir === '*') {
       doDelete = true
     }
@@ -76,9 +76,9 @@ function doDeleteDirectory (currentDir, options, currentLevel) {
   return doDelete
 }
 
-function doDeleteFile (currentFile, options = {}) {
+function doDeleteFile(currentFile, options = {}) {
   // by default it deletes nothing
-  var doDelete = false
+  let doDelete = false
 
   const extensions = options.extensions ? options.extensions : null
   const files = options.files ? options.files : null
@@ -90,12 +90,12 @@ function doDeleteFile (currentFile, options = {}) {
 
   if (files) {
     if (Array.isArray(files)) {
-      doDelete = (files.indexOf('*.*') !== -1) || (files.indexOf(basename) !== -1)
+      doDelete = files.indexOf('*.*') !== -1 || files.indexOf(basename) !== -1
     } else {
       if (files === '*.*') {
         doDelete = true
       } else {
-        doDelete = (basename === files)
+        doDelete = basename === files
       }
     }
   }
@@ -106,7 +106,7 @@ function doDeleteFile (currentFile, options = {}) {
     if (Array.isArray(extensions)) {
       doDelete = extensions.indexOf(currentExt) !== -1
     } else {
-      doDelete = (currentExt === extensions)
+      doDelete = currentExt === extensions
     }
   }
 
@@ -137,8 +137,8 @@ function doDeleteFile (currentFile, options = {}) {
   return doDelete
 }
 
-function isTestRun (options) {
-  return (options && 'test' in options) ? options.test : false
+function isTestRun(options) {
+  return options && 'test' in options ? options.test : false
 }
 
 /**
@@ -155,12 +155,12 @@ function isTestRun (options) {
  * @return {Object} json object of files and/or directories that were found and successfully removed.
  * @api public
  */
-const findRemoveSync = module.exports = function (currentDir, options, currentLevel) {
-  var removed = {}
+const findRemoveSync = (module.exports = function (currentDir, options, currentLevel) {
+  let removed = {}
 
   if (!isOverTheLimit(options) && fs.existsSync(currentDir)) {
     const maxLevel = getMaxLevel(options)
-    var deleteDirectory = false
+    let deleteDirectory = false
 
     if (hasLimit(options)) {
       options.totalRemoved = hasTotalRemoved(options) ? getTotalRemoved(options) : 0
@@ -187,8 +187,8 @@ const findRemoveSync = module.exports = function (currentDir, options, currentLe
 
       filesInDir.forEach(function (file) {
         const currentFile = path.join(currentDir, file)
-        var skip = false
-        var stat
+        let skip = false
+        let stat
 
         try {
           stat = fs.statSync(currentFile)
@@ -210,7 +210,7 @@ const findRemoveSync = module.exports = function (currentDir, options, currentLe
           }
         } else {
           if (doDeleteFile(currentFile, options)) {
-            var unlinked
+            let unlinked
 
             if (!testRun) {
               try {
@@ -247,4 +247,4 @@ const findRemoveSync = module.exports = function (currentDir, options, currentLe
   }
 
   return removed
-}
+})
