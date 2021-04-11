@@ -7,11 +7,11 @@
     "plugin:import/errors",
     "plugin:import/warnings"
   ],
+  "root": true,
   "env": {
     "browser": true,
     "es6": true
   },
-
   "rules": {
     "no-else-return": 1,
     "space-before-function-paren": [
