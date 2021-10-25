@@ -93,7 +93,7 @@ why the heck do we have this `maxLevel` option? because of performance. if you c
 var result = findRemoveSync(rootDirectory, { dir: '*', files: '*.*' })
 ```
 
-### 9. delete all files that match a regular expression
+### 10. delete all files that match a regular expression
 
 ```javascript
 var result = findRemoveSync(rootDirectory, { files: 'example[1-3]', regex: true })
@@ -101,7 +101,7 @@ var result = findRemoveSync(rootDirectory, { files: 'example[1-3]', regex: true 
 
 this deletes files `example1.txt`, `example2.txt`, and `example3.txt`, but not `example8.txt`.
 
-### 10. delete all directories that match a regular expression
+### 11. delete all directories that match a regular expression
 
 ```javascript
 var result = findRemoveSync(rootDirectory, { dir: '^assets_', regex: true })
