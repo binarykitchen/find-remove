@@ -56,7 +56,11 @@ function doDeleteDirectory(currentDir, options, currentLevel) {
 
     if (Array.isArray(dir)) {
       doDelete = dir.indexOf('*') !== -1 || dir.indexOf(basename) !== -1
-    } else if (basename === dir || dir === '*') {
+    } else if (
+      (options.regex && basename.match(new RegExp(dir))) ||
+      basename === dir ||
+      dir === '*'
+    ) {
       doDelete = true
     }
 
@@ -92,7 +96,7 @@ function doDeleteFile(currentFile, options = {}) {
     if (Array.isArray(files)) {
       doDelete = files.indexOf('*.*') !== -1 || files.indexOf(basename) !== -1
     } else {
-      if (files === '*.*') {
+      if ((options.regex && basename.match(new RegExp(files))) || files === '*.*') {
         doDelete = true
       } else {
         doDelete = basename === files
