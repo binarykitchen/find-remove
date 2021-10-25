@@ -93,6 +93,22 @@ why the heck do we have this `maxLevel` option? because of performance. if you c
 var result = findRemoveSync(rootDirectory, { dir: '*', files: '*.*' })
 ```
 
+### 9. delete all files that match a regular expression
+
+```javascript
+var result = findRemoveSync(rootDirectory, { files: 'example[1-3]', regex: true })
+```
+
+this deletes files `example1.txt`, `example2.txt`, and `example3.txt`, but not `example8.txt`.
+
+### 10. delete all directories that match a regular expression
+
+```javascript
+var result = findRemoveSync(rootDirectory, { dir: '^assets_', regex: true })
+```
+
+this deletes all directories that start with `assets_`.
+
 ## api
 
 ### findRemoveSync(dir, options)
@@ -112,6 +128,7 @@ findRemoveSync takes any start directory and searches files from there for remov
   - `prefix` - can be any string. Will delete any files that start with `prefix`.
   - `maxLevel` - advanced: limits filtering to a certain level. useful for performance. recommended for crawling huge directory trees.
   - `test` - advanced: set to true for a test run, meaning it does not delete anything but returns a JSON of files/directories it would have deleted. useful for testing.
+  - `regex` - set to true to treat `files` or `dir` option strings as regular expression patterns.
 
 as a precaution, nothing happens when there are no options.
 
@@ -124,7 +141,7 @@ JSON of files/directories that were deleted. For limit option - will only return
 ## todo
 
 - needs a rewrite
-- add more filtering options (combinations, regex, etc.)
+- add more filtering options (e.g. combinations)
 - have an asynchronous solution
 - use streams instead
 
