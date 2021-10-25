@@ -111,25 +111,21 @@ async function createFakeDirectoryTree(cb) {
     await writeFile(fixFile1_2_1_4, '')
     await writeFile(fixFile1_2_1_5, '')
 
-    cb()
+    cb && cb()
   } catch (exc) {
-    if (exc) {
-      console.error(exc)
-    }
+    console.error(exc)
   }
 }
 
 async function createFakeDirectoryTreeRegex(cb) {
   try {
-    await createFakeDirectoryTree(() => null)
+    await createFakeDirectoryTree()
     await mkdirp(directory4)
     await mkdirp(directory5)
 
     cb()
   } catch (exc) {
-    if (exc) {
-      console.error(exc)
-    }
+    console.error(exc)
   }
 }
 

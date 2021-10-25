@@ -1,6 +1,6 @@
 {
   "name": "find-remove",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "recursively finds files and/or directories by filter options from a start directory onwards and deletes these according to plenty of options you can configure. useful if you want to clean up stuff within a directory in your node.js app.",
   "main": "dist/find-remove.js",
   "author": "Michael Heuberger <michael.heuberger@binarykitchen.com>",
@@ -17,30 +17,30 @@
     "extension",
     "file stats"
   ],
+  "engines": {
+    "node": "^16.10.0",
+    "npm": "^7.20.0"
+  },
   "dependencies": {
     "fmerge": "1.2.0",
     "rimraf": "3.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "7.13.16",
-    "@babel/core": "7.13.16",
-    "@babel/eslint-parser": "7.13.14",
-    "@babel/node": "7.13.13",
-    "@babel/preset-env": "7.13.15",
+    "@babel/cli": "7.15.7",
+    "@babel/core": "7.15.8",
+    "@babel/eslint-parser": "7.15.8",
+    "@babel/node": "7.15.8",
+    "@babel/preset-env": "7.15.8",
     "eslint": "7.25.0",
-    "eslint-config-standard": "16.0.2",
-    "eslint-plugin-import": "2.22.1",
+    "eslint-config-standard": "16.0.3",
+    "eslint-plugin-import": "2.25.2",
     "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "5.1.0",
-    "microbundle": "0.13.0",
+    "eslint-plugin-promise": "4.3.1",
+    "microbundle": "0.14.1",
     "mkdirp": "1.0.4",
     "nodeunit": "0.11.3",
-    "prettier": "2.2.1",
-    "randomstring": "1.1.5"
-  },
-  "engines": {
-    "node": ">=14.4.0",
-    "yarn": "^1.17.0"
+    "prettier": "2.4.1",
+    "randomstring": "1.2.1"
   },
   "source": "src/index.js",
   "module": "dist/find-remove.mjs",
@@ -48,9 +48,9 @@
   "scripts": {
     "test": "nodeunit tests/basics.js",
     "lint": "eslint ./src ./tests",
-    "lint-fix": "yarn --silent lint --fix; exit 0",
+    "lint:fix": "yarn --silent lint --fix; exit 0",
     "prettier": "prettier --check ./src ./tests",
-    "prettier-fix": "prettier --write ./src ./tests",
+    "prettier:fix": "prettier --write ./src ./tests",
     "build": "microbundle"
   },
   "repository": {
