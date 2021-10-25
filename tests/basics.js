@@ -49,11 +49,15 @@ function generateRandomFilename(ext) {
         + directory2
             * randomFile2_1 (*.bak)
             * randomFile2_2 (*.csv)
+        + patternDirectory_token (directory4)
+        + token_patternDirectory (directory5)
  */
 
 const directory1 = path.join(rootDirectory, 'directory1')
 const directory2 = path.join(rootDirectory, 'directory2')
 const directory3 = path.join(rootDirectory, 'CVS')
+const directory4 = path.join(rootDirectory, 'patternDirectory_token')
+const directory5 = path.join(rootDirectory, 'token_patternDirectory')
 
 const directory1_1 = path.join(directory1, 'directory1_1')
 const directory1_2 = path.join(directory1, 'directory1_2')
@@ -106,6 +110,20 @@ async function createFakeDirectoryTree(cb) {
     await writeFile(randomFile1_2_1_3, '')
     await writeFile(fixFile1_2_1_4, '')
     await writeFile(fixFile1_2_1_5, '')
+
+    cb()
+  } catch (exc) {
+    if (exc) {
+      console.error(exc)
+    }
+  }
+}
+
+async function createFakeDirectoryTreeRegex(cb) {
+  try {
+    await createFakeDirectoryTree(() => null)
+    await mkdirp(directory4)
+    await mkdirp(directory5)
 
     cb()
   } catch (exc) {
@@ -1113,6 +1131,42 @@ module.exports = testCase({
         0,
         'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss"- too many chars) returned 0 entries (out of 11).'
       )
+
+      t.done()
+    }
+  }),
+
+  'TC 7: tests with regex patterns': testCase({
+    setUp: function (cb) {
+      createFakeDirectoryTreeRegex(cb)
+    },
+    tearDown: function (cb) {
+      destroyFakeDirectoryTree(cb)
+    },
+
+    'findRemoveSync(regex pattern files)': function (t) {
+      findRemoveSync(rootDirectory, { files: 'thing', regex: true })
+
+      const exists1_2_1_2 = existsSync(randomFile1_2_1_2)
+      t.equal(exists1_2_1_2, true, 'did not remove randomFile1_2_1_2')
+
+      const exists1_2_1_4 = existsSync(fixFile1_2_1_4) // something.png
+      t.equal(exists1_2_1_4, false, 'removed fixFile1_2_1_4 fine')
+
+      const exists1_2_1_5 = existsSync(fixFile1_2_1_5) // something.jpg
+      t.equal(exists1_2_1_5, false, 'removed fixFile1_2_1_5 fine')
+
+      t.done()
+    },
+
+    'findRemoveSync(regex pattern directories)': function (t) {
+      findRemoveSync(rootDirectory, { dir: '^token', regex: true })
+
+      const exists4 = existsSync(directory4)
+      t.equal(exists4, true, 'did not remove directory4')
+
+      const exists5 = existsSync(directory5)
+      t.equal(exists5, false, 'removed directory5 fine')
 
       t.done()
     }
