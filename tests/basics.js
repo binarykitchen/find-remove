@@ -1115,21 +1115,20 @@ module.exports = testCase({
       t.done()
     },
 
-    'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss" - too many chars)': function (
-      t
-    ) {
-      const result = findRemoveSync(rootDirectory, {
-        prefix: 'ssssssssssssssssssssssssss'
-      })
+    'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss" - too many chars)':
+      function (t) {
+        const result = findRemoveSync(rootDirectory, {
+          prefix: 'ssssssssssssssssssssssssss'
+        })
 
-      t.strictEqual(
-        Object.keys(result).length,
-        0,
-        'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss"- too many chars) returned 0 entries (out of 11).'
-      )
+        t.strictEqual(
+          Object.keys(result).length,
+          0,
+          'findRemoveSync(files with non-existing prefix "ssssssssssssssssssssssssss"- too many chars) returned 0 entries (out of 11).'
+        )
 
-      t.done()
-    }
+        t.done()
+      }
   }),
 
   'TC 7: tests with regex patterns': testCase({
