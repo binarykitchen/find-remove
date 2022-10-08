@@ -1,6 +1,6 @@
 {
   "name": "find-remove",
-  "version": "4.0.4",
+  "version": "4.1.0",
   "description": "recursively finds files and/or directories by filter options from a start directory onwards and deletes these according to plenty of options you can configure. useful if you want to clean up stuff within a directory in your node.js app.",
   "main": "dist/find-remove.js",
   "author": "Michael Heuberger <michael.heuberger@binarykitchen.com>",
@@ -18,29 +18,29 @@
     "file stats"
   ],
   "engines": {
-    "node": "^16.13.1",
-    "npm": "^8.1.2"
+    "node": ">=16.13.1",
+    "npm": ">=8.1.2"
   },
   "dependencies": {
     "fmerge": "1.2.0",
     "rimraf": "3.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "7.16.7",
-    "@babel/core": "7.16.7",
-    "@babel/eslint-parser": "7.16.5",
-    "@babel/node": "7.16.7",
-    "@babel/preset-env": "7.16.7",
-    "eslint": "7.25.0",
-    "eslint-config-standard": "16.0.3",
-    "eslint-plugin-import": "2.25.4",
+    "@babel/cli": "7.19.3",
+    "@babel/core": "7.19.3",
+    "@babel/eslint-parser": "7.19.1",
+    "@babel/node": "7.19.1",
+    "@babel/preset-env": "7.19.3",
+    "eslint": "8.25.0",
+    "eslint-config-standard": "17.0.0",
+    "eslint-plugin-import": "2.26.0",
     "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "4.3.1",
-    "microbundle": "0.14.2",
+    "eslint-plugin-promise": "6.0.1",
+    "microbundle": "0.15.1",
     "mkdirp": "1.0.4",
     "nodeunit": "0.11.3",
-    "prettier": "2.5.1",
-    "randomstring": "1.2.1"
+    "prettier": "2.7.1",
+    "randomstring": "1.2.2"
   },
   "source": "src/index.js",
   "module": "dist/find-remove.mjs",
