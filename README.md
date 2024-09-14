@@ -1,6 +1,6 @@
 # find-remove
 
-[![Build Status](https://travis-ci.org/binarykitchen/find-remove.png?branch=master)](https://travis-ci.org/binarykitchen/find-remove)
+finally in typescript (since v5)
 
 recursively finds files by filter options from a start directory onwards and deletes only those which meet conditions you can define. useful if you want to clean up a directory in your node.js app.
 
@@ -14,16 +14,16 @@ to install find-remove, use [npm](http://github.com/isaacs/npm):
 
 then in your node.js app, get reference to the function like that:
 
-```javascript
-const findRemoveSync = require('find-remove')
+```ts
+import findRemoveSync from "find-remove";
 ```
 
 ## quick examples
 
 ### 1. delete all _.bak or _.log files within the /temp/ directory
 
-```javascript
-const result = findRemoveSync('/temp', { extensions: ['.bak', '.log'] })
+```ts
+const result = findRemoveSync("/temp", { extensions: [".bak", ".log"] });
 ```
 
 the return value `result` is a json object with successfully deleted files. if you output `result` to the console, you will get something like this:
@@ -37,48 +37,48 @@ the return value `result` is a json object with successfully deleted files. if y
 
 ### 2. delete all files called 'dump.log' within the /temp/ directory and within its subfolders
 
-```javascript
-var result = findRemoveSync('/temp', { files: 'dump.log' })
+```ts
+const result = findRemoveSync("/temp", { files: "dump.log" });
 ```
 
 ### 3. same as above, but also deletes any subfolders
 
-```javascript
-var result = findRemoveSync('/temp', { files: 'dump.log', dir: '*' })
+```ts
+const result = findRemoveSync("/temp", { files: "dump.log", dir: "*" });
 ```
 
 ### 4. delete all \*.bak files but not file 'haumiblau.bak'
 
-```javascript
-var result = findRemoveSync('/temp', { extensions: ['.bak'], ignore: 'haumiblau.bak' })
+```ts
+const result = findRemoveSync("/temp", { extensions: [".bak"], ignore: "haumiblau.bak" });
 ```
 
 ### 5. delete recursively any subdirectory called 'CVS' within /dist/
 
-```javascript
-var result = findRemoveSync('/dist', { dir: 'CVS' })
+```ts
+const result = findRemoveSync("/dist", { dir: "CVS" });
 ```
 
 ### 6. delete all jpg files older than one hour with limit of 100 files deletion per operation
 
-```javascript
-var result = findRemoveSync('/tmp', {
+```ts
+const result = findRemoveSync("/tmp", {
   age: { seconds: 3600 },
-  extensions: '.jpg',
-  limit: 100
-})
+  extensions: ".jpg",
+  limit: 100,
+});
 ```
 
 ### 7. delete all files with prefix 'filenamestartswith'
 
 ```javascript
-var result = findRemoveSync('/tmp', { prefix: 'filenamestartswith' })
+const result = findRemoveSync("/tmp", { prefix: "filenamestartswith" });
 ```
 
 ### 8. apply filter options only for two levels inside the /temp directory for all tmp files
 
-```javascript
-var result = findRemoveSync('/tmp', { maxLevel: 2, extensions: '.tmp' })
+```ts
+const result = findRemoveSync("/tmp", { maxLevel: 2, extensions: ".tmp" });
 ```
 
 this deletes any `.tmp` files up to two levels, for example: `/tmp/level1/level2/a.tmp`
@@ -89,22 +89,22 @@ why the heck do we have this `maxLevel` option? because of performance. if you c
 
 ### 9. delete everything recursively (hey, who needs that when you can use nodejs' fs.unlink?)
 
-```javascript
-var result = findRemoveSync(rootDirectory, { dir: '*', files: '*.*' })
+```ts
+const result = findRemoveSync(rootDirectory, { dir: "*", files: "*.*" });
 ```
 
 ### 10. delete all files that match a regular expression
 
-```javascript
-var result = findRemoveSync(rootDirectory, { files: 'example[1-3]', regex: true })
+```ts
+const result = findRemoveSync(rootDirectory, { files: "example[1-3]", regex: true });
 ```
 
 this deletes files `example1.txt`, `example2.txt`, and `example3.txt`, but not `example8.txt`.
 
 ### 11. delete all directories that match a regular expression
 
-```javascript
-var result = findRemoveSync(rootDirectory, { dir: '^assets_', regex: true })
+```ts
+const result = findRemoveSync(rootDirectory, { dir: "^assets_", regex: true });
 ```
 
 this deletes all directories that start with `assets_`.
@@ -121,7 +121,7 @@ findRemoveSync takes any start directory and searches files from there for remov
 - options - currently those properties are supported:
   - `files` - can be a string or an array of files you want to delete within `dir`.
   - `dir` - can be a string or an array of directories you want to delete within `dir`.
-  - `extensions` - this too, can be a string or an array of file extentions you want to delete within `dir`.
+  - `extensions` - this too, can be a string or an array of file extensions you want to delete within `dir`.
   - `ignore` - useful to exclude some files. again, can be a string or an array of file names you do NOT want to delete within `dir`
   - `age.seconds` - can be any float number. findRemoveSync then compares it with the file stats and deletes those with modification times older than `age.seconds`
   - `limit` - can be any integer number. Will limit the number of <b>files</b> to be deleted at single operation to be `limit`
@@ -140,7 +140,6 @@ JSON of files/directories that were deleted. For limit option - will only return
 
 ## todo
 
-- needs a rewrite
 - add more filtering options (e.g. combinations)
 - have an asynchronous solution
 - use streams instead

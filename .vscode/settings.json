@@ -1,0 +1,16 @@
+{
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.configPath": "./prettier.config.cjs",
+  "cSpell.words": [
+    "blahblah",
+    "fmerge",
+    "hehehe",
+    "microbundle",
+    "nodeunit",
+    "randomstring",
+    "someth"
+  ]
+}

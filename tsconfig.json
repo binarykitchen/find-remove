@@ -1,0 +1,10 @@
+{
+  "include": ["src", "tests", ".eslintrc.cjs", "prettier.config.cjs"],
+  "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/node22/tsconfig.json"],
+  "compilerOptions": {
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "lib": ["es2022"],
+    "noEmit": true
+  }
+}
