@@ -57,13 +57,17 @@ function getMaxLevel(options: Options = {}) {
 }
 
 function getAgeSeconds(options: Options = {}) {
-  return options.age && options.age.seconds ? options.age.seconds : null;
+  if (!options.age) {
+    return null;
+  }
+
+  return options.age.seconds ?? null;
 }
 
 function doDeleteDirectory(
   currentDir: string,
-  options: Options = {},
   currentLevel: number,
+  options: Options = {},
 ) {
   let doDelete = false;
 
@@ -106,7 +110,7 @@ function doDeleteFile(currentFile: string, options: Options = {}) {
   const extensions = options.extensions ? options.extensions : null;
   const files = options.files ? options.files : null;
   const prefix = options.prefix ? options.prefix : null;
-  const ignore = options && options.ignore ? options.ignore : null;
+  const ignore = options.ignore ?? null;
 
   // return the last portion of a path, the filename aka basename
   const basename = path.basename(currentFile);
@@ -203,7 +207,7 @@ const findRemoveSync = function (
       // check directories before deleting files inside.
       // this to maintain the original creation time,
       // because linux modifies creation date of folders when files within have been deleted.
-      deleteDirectory = doDeleteDirectory(currentDir, options, currentLevel);
+      deleteDirectory = doDeleteDirectory(currentDir, currentLevel, options);
     }
 
     if (maxLevel === -1 || currentLevel < maxLevel) {
@@ -228,7 +232,7 @@ const findRemoveSync = function (
           const result = findRemoveSync(currentFile, options, currentLevel);
 
           // merge results
-          removed = Object.assign({}, removed, result);
+          removed = { ...removed, ...result };
 
           if (options.totalRemoved !== undefined) {
             options.totalRemoved += Object.keys(result).length;
