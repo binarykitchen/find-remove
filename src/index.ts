@@ -16,9 +16,7 @@ interface Options {
   ignore?: string | string[];
   extensions?: string | string[];
   files?: string | string[];
-  age?: {
-    seconds?: number;
-  };
+  age?: { seconds?: number };
 }
 
 function isOlder(path: string, ageSeconds: number) {
