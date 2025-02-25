@@ -164,6 +164,15 @@ function doDeleteFile(currentFile: string, options: Options = {}) {
   return doDelete;
 }
 
+function hasStats(dir: string) {
+  try {
+    fs.lstatSync(dir);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 /**
  * FindRemoveSync(currentDir, options) takes any start directory and searches files from there for removal.
  * the selection of files for removal depends on the given options. when no options are given, or only the maxLevel
@@ -185,9 +194,22 @@ const findRemoveSync = function (
 ) {
   let removed: Record<string, boolean> = {};
 
-  if (!isOverTheLimit(options) && fs.existsSync(currentDir)) {
+  if (isOverTheLimit(options)) {
+    // Return early in that case
+    return removed;
+  }
+
+  let deleteDirectory = false;
+
+  const dirExists = fs.existsSync(currentDir);
+  const dirHasStats = hasStats(currentDir);
+
+  if (dirExists && !dirHasStats) {
+    // Must be a broken symlink. Flag it for deletion. See:
+    // https://github.com/binarykitchen/find-remove/issues/42
+    deleteDirectory = true;
+  } else if (dirExists) {
     const maxLevel = getMaxLevel(options);
-    let deleteDirectory = false;
 
     if (options.limit !== undefined) {
       options.totalRemoved =
@@ -237,42 +259,40 @@ const findRemoveSync = function (
           if (options.totalRemoved !== undefined) {
             options.totalRemoved += Object.keys(result).length;
           }
-        } else {
-          if (doDeleteFile(currentFile, options)) {
-            let unlinked;
+        } else if (doDeleteFile(currentFile, options)) {
+          let unlinked;
 
-            if (!testRun) {
-              try {
-                fs.unlinkSync(currentFile);
-                unlinked = true;
-              } catch (exc) {
-                // ignore
-              }
-            } else {
+          if (!testRun) {
+            try {
+              fs.unlinkSync(currentFile);
               unlinked = true;
+            } catch (exc) {
+              // ignore
             }
+          } else {
+            unlinked = true;
+          }
 
-            if (unlinked) {
-              removed[currentFile] = true;
+          if (unlinked) {
+            removed[currentFile] = true;
 
-              if (options.totalRemoved !== undefined) {
-                options.totalRemoved++;
-              }
+            if (options.totalRemoved !== undefined) {
+              options.totalRemoved++;
             }
           }
         }
       });
     }
+  }
 
-    if (deleteDirectory) {
-      if (!testRun) {
-        rimrafSync(currentDir);
-      }
+  if (deleteDirectory) {
+    if (!testRun) {
+      rimrafSync(currentDir);
+    }
 
-      if (options.totalRemoved === undefined) {
-        // for limit of files - we do not want to count the directories
-        removed[currentDir] = true;
-      }
+    if (options.totalRemoved === undefined) {
+      // for limit of files - we do not want to count the directories
+      removed[currentDir] = true;
     }
   }
 
