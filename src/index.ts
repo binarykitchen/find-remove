@@ -241,7 +241,8 @@ const findRemoveSync = function (
         let stat;
 
         try {
-          stat = fs.statSync(currentFile);
+          // Add extra checks for invalid symlinks using lstatSync
+          stat = fs.lstatSync(currentFile);
         } catch (exc) {
           // ignore
           skip = true;
